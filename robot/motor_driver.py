@@ -50,7 +50,7 @@ def stop():
     PWM.set_duty_cycle(pin_FmotR, 0)
     PWM.set_duty_cycle(pin_BmotL, 0)
     PWM.set_duty_cycle(pin_BmotR, 0)
-    time.sleep(0.1)
+    time.sleep(0.3)
 
 
 def forward(vMode=1):

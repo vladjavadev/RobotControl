@@ -1,4 +1,4 @@
-from robot import RobotController as rc
+from robot import controller as rc
 import sys
 import termios
 import tty

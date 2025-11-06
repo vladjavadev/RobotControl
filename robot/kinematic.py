@@ -1,14 +1,21 @@
 import numpy as np
-from robot.RobotMotorDriver import duty_levels
+from robot.motor_driver import duty_levels
 import math
 
+times = [0.39,0.36,0.36,0.49,0.3]
 T = 0.6#s
 wheelRadius = 30 #mm
-vLinearMax = 2*3.14*wheelRadius/T #mm/s
-speeds = [vLinearMax * d/100 for d in duty_levels]
+vLinearMax = []
+speeds = []
 LwheelBase = 150 #mm
 Kdc = 0.7
 
+
+def init():
+    global vLinearMax
+    global speeds
+    vLinearMax = [2*3.14*wheelRadius/t for t in times] #mm/s
+    speeds =[vLinearMax[i] * duty_levels[i]/100 for i in range (0,5) ]
 
 def get_deltaT(vL, vR, deg):
     omega = (vR - vL)/LwheelBase

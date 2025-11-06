@@ -1,11 +1,12 @@
-from robot import RobotKinematic as rk
-from robot import RobotMotorDriver as rd
+from robot import kinematic as rk
+from robot import motor_driver as rd
 
 speed_mode_max = 4
 speed_mode_min = 1
 
 
 def init():
+    rk.init()
     rd.init()
 
 
@@ -19,7 +20,7 @@ def turnLeft(speed_mode=1):
     vl = rk.speeds[cM-1]
     turnTime = rk.get_deltaT(vl, 0, 90)
     print("Turning left")
-    rd.turnLeft(turnTime)
+    rd.turnLeft(turnTime,cM)
     rd.stop()
 
 
@@ -28,7 +29,7 @@ def turnRight(speed_mode=1):
     vr = rk.speeds[cM-1]
     turnTime = rk.get_deltaT(0, vr, 90)
     print("Turning right")
-    rd.turnRight(turnTime)
+    rd.turnRight(turnTime, cM)
     rd.stop()
 
 def forward(speed_mode=1):
