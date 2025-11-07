@@ -1,6 +1,6 @@
 import numpy as np
-from utils import get_movements_4n, get_movements_8n, heuristic, Vertices, Vertex
-from typing import Dict, List
+from dstar.utils import get_movements_4n, get_movements_8n, heuristic, Vertices, Vertex
+from typing import Dict, List, Tuple
 
 OBSTACLE = 255
 UNOCCUPIED = 0
@@ -117,7 +117,7 @@ class OccupancyGridMap:
         (row, col) = (x, y)
         self.occupancy_grid_map[row, col] = UNOCCUPIED
         
-    def set_weight(self, pos: tuple[int, int], weight: float):
+    def set_weight(self, pos: Tuple[int, int], weight: float):
         """
         Set the weight of a node. Higher weights mean the node is harder to traverse.
         :param pos: position (x, y)
@@ -127,7 +127,7 @@ class OccupancyGridMap:
             x, y = pos
             self.weight_map[x][y] = weight
             
-    def get_weight(self, pos: tuple[int, int]) -> float:
+    def get_weight(self, pos: Tuple[int, int]) -> float:
         """
         Get the weight of a node.
         :param pos: position (x, y)
@@ -161,7 +161,7 @@ class SLAM:
         # Copy weights from ground truth map to SLAM map
         self.slam_map.weight_map = gt_map.weight_map.copy()
 
-    def set_weight(self, pos: tuple[int, int], weight: float):
+    def set_weight(self, pos: Tuple[int, int], weight: float):
         """
         Set the weight of a node. Higher weights mean the node is harder to traverse.
         :param pos: position (x, y)
@@ -174,7 +174,7 @@ class SLAM:
             if self.ground_truth_map is not None:
                 self.ground_truth_map.weight_map[x][y] = weight
             
-    def get_weight(self, pos: tuple[int, int]) -> float:
+    def get_weight(self, pos: Tuple[int, int]) -> float:
         """
         Get the weight of a node.
         :param pos: position (x, y)
@@ -183,7 +183,7 @@ class SLAM:
         x, y = pos
         return self.slam_map.weight_map[x][y]
 
-    def c(self, u: tuple[int, int], v: tuple[int, int]) -> float:
+    def c(self, u: Tuple[int, int], v: Tuple[int, int]) -> float:
         """
         Calculate the cost between nodes, considering node weights
         :param u: from vertex

@@ -1,9 +1,11 @@
-from gui import Animation
-from d_star_lite import DStarLite
-from grid import OccupancyGridMap, SLAM
+
+from dstar.d_star_lite import DStarLite
+from dstar.grid import OccupancyGridMap, SLAM
+import logic as lgc
 
 OBSTACLE = 255
 UNOCCUPIED = 0
+
 
 if __name__ == '__main__':
 
@@ -15,23 +17,28 @@ if __name__ == '__main__':
     V (x=2, y=0)
     x, row
     """
-    x_dim = 100
-    y_dim = 80
-    start = (10, 10)
-    goal = (40, 70)
-    view_range = 5
+    x_dim = 10
+    y_dim = 10
+    start = (1, 1)
+    goal = (8, 8)
+    view_range = 2
 
-    gui = Animation(title="D* Lite Path Planning",
-                    width=10,
-                    height=10,
-                    margin=0,
-                    x_dim=x_dim,
-                    y_dim=y_dim,
-                    start=start,
-                    goal=goal,
-                    viewing_range=view_range)
 
-    new_map = gui.world
+    new_map = OccupancyGridMap(x_dim=x_dim,
+                                      y_dim=y_dim,
+                                      exploration_setting='8N')
+    
+    # Add obstacles
+    obstacles = [
+        (4, 4), (3, 4), (3, 5),  # Horizontal wall
+         (7, 3), (7, 4),  # Another wall
+        (5, 7), (6, 7), (7, 7),  # Vertical wall
+    ]
+    
+    # Place obstacles
+    for obs in obstacles:
+        new_map.set_obstacle(obs)
+    
     old_map = new_map
 
     new_position = start
@@ -49,39 +56,46 @@ if __name__ == '__main__':
     slam = SLAM(map=new_map,
                 view_range=view_range)
 
-    # move and compute path
+    # Initial path planning
     path, g, rhs = dstar.move_and_replan(robot_position=new_position)
+    
+    if path is None:
+        print("No valid path found from start to goal!")
+        exit(1)
+        
+    print(f"Initial path found: {path}")
+    
+    logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
+    
+    # Only proceed if we have a valid path
+    if path:
+        for obs in obstacles:
+            new_map.set_obstacle(obs)
+        while True: 
+            # update the map
+            # print(path)
+            # drive gui
 
-    while not gui.done:
-        # update the map
-        # print(path)
-        # drive gui
-        gui.run_game(path=path)
+            new_position = path[1]
+            new_observation = {"pos": None, "type": None}
+            new_map = new_map
 
-        new_position = gui.current
-        new_observation = gui.observation
-        new_map = gui.world
+            logic.move_robot(new_position)
+            print("current pos", new_position)
+            if new_observation is not None:
+                old_map = new_map
+                slam.set_ground_truth_map(gt_map=new_map)
 
-        """
-        if new_observation is not None:
-            if new_observation["type"] == OBSTACLE:
-                dstar.global_map.set_obstacle(pos=new_observation["pos"])
-            if new_observation["pos"] == UNOCCUPIED:
-                dstar.global_map.remove_obstacle(pos=new_observation["pos"])
-        """
+            print("new_pos and last_pos",new_position,last_position)
+            if new_position != last_position:
+                last_position = new_position
 
-        if new_observation is not None:
-            old_map = new_map
-            slam.set_ground_truth_map(gt_map=new_map)
+                # slam
+                new_edges_and_old_costs, slam_map = slam.rescan(global_position=new_position)
 
-        if new_position != last_position:
-            last_position = new_position
+                dstar.new_edges_and_old_costs = new_edges_and_old_costs
+                dstar.sensed_map = slam_map
 
-            # slam
-            new_edges_and_old_costs, slam_map = slam.rescan(global_position=new_position)
+                # d star
 
-            dstar.new_edges_and_old_costs = new_edges_and_old_costs
-            dstar.sensed_map = slam_map
-
-            # d star
-            path, g, rhs = dstar.move_and_replan(robot_position=new_position)
+                path, g, rhs = dstar.move_and_replan(robot_position=new_position)

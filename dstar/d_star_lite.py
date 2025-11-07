@@ -1,8 +1,8 @@
-from priority_queue import PriorityQueue, Priority
-from grid import OccupancyGridMap
+from dstar.priority_queue import PriorityQueue, Priority
+from dstar.grid import OccupancyGridMap
 import numpy as np
-from utils import heuristic, Vertex, Vertices
-from typing import Dict, List
+from dstar.utils import heuristic, Vertex, Vertices
+from typing import Dict, List, Tuple
 
 OBSTACLE = 255
 UNOCCUPIED = 0
@@ -44,7 +44,7 @@ class DStarLite:
         k2 = min(self.g[s], self.rhs[s])
         return Priority(k1, k2)
 
-    def c(self, u: tuple[int, int], v: tuple[int, int]) -> float:
+    def c(self, u: Tuple[int, int], v: Tuple[int, int]) -> float:
         """
         Calculate the cost between nodes
         :param u: from vertex
@@ -54,17 +54,7 @@ class DStarLite:
         if not self.sensed_map.is_unoccupied(u) or not self.sensed_map.is_unoccupied(v):
             return float('inf')
         else:
-            # Get base distance
-            base_cost = heuristic(u, v)
-            
-            # Get weights from both nodes
-            u_weight = self.sensed_map.weight_map[u[0]][u[1]]
-            v_weight = self.sensed_map.weight_map[v[0]][v[1]]
-            
-            # Use maximum weight to ensure difficult terrain is avoided
-            max_weight = max(u_weight, v_weight)
-            
-            return base_cost * max_weight
+            return heuristic(u, v)
 
     def contain(self, u: (int, int)) -> (int, int):
         return u in self.U.vertices_in_heap
@@ -120,6 +110,7 @@ class DStarLite:
         path = [robot_position]
         self.s_start = robot_position
         self.s_last = self.s_start
+        print("move_and_replan called with robot_position:", self.s_start)
         self.compute_shortest_path()
 
         while self.s_start != self.s_goal:
@@ -129,12 +120,16 @@ class DStarLite:
             min_s = float('inf')
             arg_min = None
             for s_ in succ:
+                print("move_and_replan: checking successor:", s_)
                 temp = self.c(self.s_start, s_) + self.g[s_]
+                print("move_and_replan: checking cost:", temp)
+
                 if temp < min_s:
                     min_s = temp
                     arg_min = s_
 
             ### algorithm sometimes gets stuck here for some reason !!! FIX
+            print("move_and_replan: self.s_start:", self.s_start)
             self.s_start = arg_min
             path.append(self.s_start)
             # scan graph for changed costs
@@ -142,6 +137,7 @@ class DStarLite:
             #print("len path: {}".format(len(path)))
             # if any edge costs changed
             if changed_edges_with_old_cost:
+                print("moving and replanning self.s_last,self.s_start:",self.s_last,self.s_start)
                 self.k_m += heuristic(self.s_last, self.s_start)
                 self.s_last = self.s_start
 
