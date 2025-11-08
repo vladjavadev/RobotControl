@@ -1,4 +1,4 @@
-from robot import controller as rc
+# from robot import controller as rc
 
 
 
@@ -20,7 +20,7 @@ class Logic:
         self.dir = dir
         self.pos = pos
         self.vMode = vMode
-        rc.init()
+        # rc.init()
 
     def get_dir_ix(self, vector):
         for i, dir_vec in enumerate(DIRECTIONS):
@@ -52,10 +52,10 @@ class Logic:
             turn_side = ""
             if turns[1] == "right":
                 turn_side = "right"
-                rotateFunc = rc.turnRight
+                # rotateFunc = rc.turnRight
             else:
                 turn_side = "left"
-                rotateFunc = rc.turnLeft
+                # rotateFunc = rc.turnLeft
 
             for _ in range(turns[0]):
                 # if turns[1] == "right":
@@ -65,9 +65,9 @@ class Logic:
                 #     print("Turning left num:", turns[0])
                 #     rc.turnLeft(self.vMode)
                 print("Turning {} num: {}".format(turn_side, turns[0]))
-                rotateFunc(self.vMode)
+                # rotateFunc(self.vMode)
 
-        rc.forward(self.vMode)
+        # rc.forward(self.vMode)
         self.update_dir_pos(new_pos, new_dir)
 
 

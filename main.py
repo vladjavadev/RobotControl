@@ -1,13 +1,15 @@
 
 from dstar.d_star_lite import DStarLite
 from dstar.grid import OccupancyGridMap, SLAM
+import server as srv
 import logic as lgc
+import time
 
 OBSTACLE = 255
 UNOCCUPIED = 0
 
 
-if __name__ == '__main__':
+def run_algorithm():
 
     """
     set initial values for the map occupancy grid
@@ -24,9 +26,7 @@ if __name__ == '__main__':
     view_range = 2
 
 
-    new_map = OccupancyGridMap(x_dim=x_dim,
-                                      y_dim=y_dim,
-                                      exploration_setting='8N')
+    new_map = srv.g_dt.world
     
     # Add obstacles
     obstacles = [
@@ -66,19 +66,19 @@ if __name__ == '__main__':
     print(f"Initial path found: {path}")
     
     logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
-    
+    for obs in obstacles:
+        new_map.set_obstacle(obs)
     # Only proceed if we have a valid path
     if path:
-        for obs in obstacles:
-            new_map.set_obstacle(obs)
+
         while True: 
             # update the map
             # print(path)
             # drive gui
-
-            new_position = path[1]
-            new_observation = {"pos": None, "type": None}
-            new_map = new_map
+            time.sleep(2.0)
+            new_position = srv.g_dt.get_position()
+            new_observation = srv.g_dt.observation
+            new_map = srv.g_dt.world
 
             logic.move_robot(new_position)
             print("current pos", new_position)
@@ -99,3 +99,6 @@ if __name__ == '__main__':
                 # d star
 
                 path, g, rhs = dstar.move_and_replan(robot_position=new_position)
+
+if __name__ == "__main__":
+    run_algorithm()
