@@ -9,7 +9,7 @@ OBSTACLE = 255
 UNOCCUPIED = 0
 
 
-def run_algorithm():
+def run_algorithm(dto):
 
     """
     set initial values for the map occupancy grid
@@ -26,7 +26,7 @@ def run_algorithm():
     view_range = 2
 
 
-    new_map = srv.g_dt.world
+    new_map = dto.world
     
     # Add obstacles
     obstacles = [
@@ -70,15 +70,21 @@ def run_algorithm():
         new_map.set_obstacle(obs)
     # Only proceed if we have a valid path
     if path:
-
-        while True: 
+        
+        while True:
+            time.sleep(1.0)
+            dto.set_path(path)
             # update the map
             # print(path)
             # drive gui
-            time.sleep(2.0)
-            new_position = srv.g_dt.get_position()
-            new_observation = srv.g_dt.observation
-            new_map = srv.g_dt.world
+            if path[0]==dto.get_goal():
+                logic.move_robot(path[0])
+                print("Reached goal!")
+                break
+
+            new_position = dto.get_path()[1]
+            new_observation = dto.observation
+            new_map = dto.world
 
             logic.move_robot(new_position)
             print("current pos", new_position)
@@ -101,4 +107,4 @@ def run_algorithm():
                 path, g, rhs = dstar.move_and_replan(robot_position=new_position)
 
 if __name__ == "__main__":
-    run_algorithm()
+    run_algorithm(srv.g_dt)

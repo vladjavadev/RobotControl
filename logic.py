@@ -48,6 +48,9 @@ class Logic:
         new_dir = self.get_dir(new_pos)
         print("<!---move_robot\n","current dir:", self.dir, "new dir:", new_dir)
         if new_dir != self.dir:
+            if new_dir == (0,0):
+                print("No movement detected.")
+                return
             turns = self.turns_needed(self.dir, new_dir)
             turn_side = ""
             if turns[1] == "right":

@@ -14,6 +14,7 @@ class GridDto:
         self.observation = {"pos": None, "type": None}
         self.goal = goal
         self.viewing_range = viewing_range
+        self.path = None
 
 
         self.world = OccupancyGridMap(x_dim=x_dim,
@@ -21,6 +22,11 @@ class GridDto:
                                       exploration_setting='8N')
 
 
+    def set_path(self, path=None):
+        self.path = path
+    def get_path(self):
+        return self.path
+    
     def get_position(self):
         return self.current
 
