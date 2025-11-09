@@ -14,7 +14,7 @@ import functools
 
 g_dt = GridDto()
 
-async def echo(dto, websocket:ServerConnection):
+async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
     event = json.loads(message)
    
@@ -26,13 +26,15 @@ async def echo(dto, websocket:ServerConnection):
             dto.set_obs(event["obs"][0])
         elif "no-obs" in event:
             dto.rem_obs(event["no-obs"][0])
-    elif event["type"] == "pos":
+    elif event["type"] == "get-location":
         pos = dto.get_position()
-        event_pos = {
-            "type":"pos",
-            "current_pos":pos
+        path = dto.get_path()
+        event_location = {
+            "type":"location",
+            "current_pos":pos,
+            "path":path
         }
-        await websocket.send(json.dumps(event_pos))
+        await websocket.send(json.dumps(event_location))
     else:
         KeyError("NO route finded")
 
