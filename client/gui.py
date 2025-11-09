@@ -2,7 +2,7 @@ import pygame
 import time
 from typing import List
 import numpy as np
-import client
+from client import client_websocket as cw
 import threading
 
 # Define some colors
@@ -22,7 +22,7 @@ colors = {
     255: OBSTACLE
 }
 
-rPos = client.RobotPos((0,0))
+rPos = cw.RobotPos((0,0))
 class Animation:
     def __init__(self,
                  title="D* Lite Path Planning",
@@ -157,7 +157,7 @@ class Animation:
                 # if self.world.is_unoccupied(grid_cell):
                 #     self.world.set_obstacle(grid_cell)
                 #     self.observation = {"pos": grid_cell, "type": OBSTACLE}
-                client.send_obs_coord(grid_cell)
+                cw.send_obs_coord(grid_cell)
                 self.occupancy_grid_map[grid_cell[0], grid_cell[1]] = 255
 
             # remove obstacle by holding right-click
@@ -178,7 +178,7 @@ class Animation:
                 #     self.world.remove_obstacle(grid_cell)
                 #     self.observation = {"pos": grid_cell, "type": UNOCCUPIED}
 
-                client.send_no_obs_coord(grid_cell)
+                cw.send_no_obs_coord(grid_cell)
                 self.occupancy_grid_map[grid_cell[0], grid_cell[1]] = 0
 
         # set the screen background
@@ -203,7 +203,7 @@ class Animation:
 
         # draw a moving robot, based on current coordinates
         
-        client.get_pos(rPos)
+        cw.get_pos(rPos)
         self.current = rPos.pos
         robot_center = [round(self.current[1] * (self.width + self.margin) + self.width / 2) + self.margin,
                         round(
@@ -250,9 +250,3 @@ def run_gui():
     path= [(1,1),(2,2),(3,3)]
     while not gui.done:
         gui.run_game(path=path)
-
-if __name__ == "__main__":
-    try:
-        run_gui()
-    except KeyboardInterrupt:
-        print("\n\nПрограмма прервана пользователем")
