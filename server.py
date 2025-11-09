@@ -3,7 +3,7 @@
 """Echo server using the asyncio API."""
 
 import asyncio
-from websockets.asyncio.server import serve
+from websockets.asyncio.server import serve, ServerConnection
 from grid_dto import GridDto
 import main as mn
 import json
@@ -14,16 +14,33 @@ import functools
 
 g_dt = GridDto()
 
-async def echo(dto, websocket):
+async def echo(dto, websocket:ServerConnection):
     message = await websocket.recv()
     event = json.loads(message)
-    print("<!------",event["obs"][0],"------!>")
-    assert event["type"] == "start"
+   
+    # assert event["type"] == "start"
+    if event["type"] == "start":
+        
+        if "obs" in event:
+            print("<!------",event["obs"][0],"------!>")
+            dto.set_obs(event["obs"][0])
+        elif "no-obs" in event:
+            dto.rem_obs(event["no-obs"][0])
+    elif event["type"] == "pos":
+        pos = dto.get_position()
+        event_pos = {
+            "type":"pos",
+            "current_pos":pos
+        }
+        await websocket.send(json.dumps(event_pos))
+    else:
+        KeyError("NO route finded")
 
-    if "obs" in event:
-        dto.set_obs(event["obs"][0])
-    elif "no-obs" in event:
-        dto.rem_obs(event["no-obs"][0])
+
+async def get_pos(dto: GridDto, websocket:ServerConnection):
+    pos = dto.get_position()
+    websocket.send(pos)
+
         
 
 async def main():
@@ -31,6 +48,7 @@ async def main():
     bound_handler = functools.partial(echo, g_dt)
     async with serve(bound_handler, "localhost", 8765) as server:
         await server.serve_forever()
+
 
 def moving_robot(dto):
     time.sleep(10.0)

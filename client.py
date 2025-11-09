@@ -7,8 +7,9 @@ import functools
 
 import threading
 
-
-
+class RobotPos:
+    def __init__(self, pos):
+        self.pos = pos
 
 def parse_coord(input_str):
     """
@@ -84,6 +85,38 @@ def send_obs_coord(grid_cell):
 
 def send_no_obs_coord(grid_cell):
     asyncio.run(set_no_obs(grid_cell))
+
+def get_pos(pos):
+    asyncio.run(async_get_pos(pos))
+
+async def async_get_pos(pos):
+    uri = "ws://localhost:8765"
+
+    try:
+        async with connect(uri) as websocket:
+            event = {
+                "type": "pos"
+            }
+            
+            await websocket.send(json.dumps(event))
+            print(f"✓ Событие отправлено: {event}")
+            
+            # Опционально: ожидание ответа от сервера
+            try:
+                response = await asyncio.wait_for(websocket.recv(), timeout=40.0)
+                event_pos = json.loads(response)
+                if event_pos["type"] == "pos":
+                    if "current_pos" in event_pos:
+                        pos.pos = tuple(event_pos["current_pos"])
+
+                print(f"Ответ сервера: {response}")
+            except asyncio.TimeoutError:
+                print("Сервер не ответил в течение 5 секунд")
+            
+    except ConnectionRefusedError:
+        print("❌ Не удалось подключиться к серверу. Проверьте, что сервер запущен на ws://localhost:8765")
+    except Exception as e:
+        print(f"❌ Ошибка: {e}")
 
 
 if __name__ == "__main__":

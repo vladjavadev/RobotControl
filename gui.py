@@ -14,13 +14,15 @@ GRAY1 = (145, 145, 102)  # GRAY1
 OBSTACLE = (77, 77, 51)  # GRAY2
 LOCAL_GRID = (0, 0, 80)  # BLUE
 
+
+
 colors = {
     0: UNOCCUPIED,
     1: GOAL,
     255: OBSTACLE
 }
 
-
+rPos = client.RobotPos((0,0))
 class Animation:
     def __init__(self,
                  title="D* Lite Path Planning",
@@ -156,6 +158,7 @@ class Animation:
                 #     self.world.set_obstacle(grid_cell)
                 #     self.observation = {"pos": grid_cell, "type": OBSTACLE}
                 client.send_obs_coord(grid_cell)
+                self.occupancy_grid_map[grid_cell[0], grid_cell[1]] = 255
 
             # remove obstacle by holding right-click
             elif pygame.mouse.get_pressed()[2]:
@@ -176,6 +179,7 @@ class Animation:
                 #     self.observation = {"pos": grid_cell, "type": UNOCCUPIED}
 
                 client.send_no_obs_coord(grid_cell)
+                self.occupancy_grid_map[grid_cell[0], grid_cell[1]] = 0
 
         # set the screen background
         self.screen.fill(BLACK)
@@ -198,6 +202,9 @@ class Animation:
                                              self.height])
 
         # draw a moving robot, based on current coordinates
+        
+        client.get_pos(rPos)
+        self.current = rPos.pos
         robot_center = [round(self.current[1] * (self.width + self.margin) + self.width / 2) + self.margin,
                         round(
                             self.current[0] * (self.height + self.margin) + self.height / 2) + self.margin]
