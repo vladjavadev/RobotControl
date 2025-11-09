@@ -4,8 +4,8 @@
 
 import asyncio
 from websockets.asyncio.server import serve, ServerConnection
-from grid_dto import GridDto
-import main as mn
+from server.grid_dto import GridDto
+import core.algorithm as agm
 import json
 import threading
 import time
@@ -86,7 +86,7 @@ def run_server(dto):
 
 if __name__ == "__main__":
  
-    threads = [ DoWork(shared=g_dt, task_func=mn.run_algorithm, name='a'), 
+    threads = [ DoWork(shared=g_dt, task_func=agm.run_algorithm, name='a'), 
                 DoWork(shared=g_dt, task_func=moving_robot, name='b'),
                 DoWork(shared=g_dt, task_func=run_server, name='c')
 ]

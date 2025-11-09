@@ -2,7 +2,7 @@
 from dstar.d_star_lite import DStarLite
 from dstar.grid import OccupancyGridMap, SLAM
 import server as srv
-import logic as lgc
+import robot.move_logic as lgc
 import time
 
 OBSTACLE = 255
