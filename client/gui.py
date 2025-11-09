@@ -22,13 +22,13 @@ colors = {
     255: OBSTACLE
 }
 
-rPos = cw.RobotPos((0,0))
+rLoc = cw.RobotPos((0,0))
 class Animation:
     def __init__(self,
                  title="D* Lite Path Planning",
                  width=10,
                  height=10,
-                 margin=0,
+                 margin=10,
                  x_dim=10,
                  y_dim=10,
                  start=(1, 1),
@@ -193,6 +193,9 @@ class Animation:
                                   (self.margin + self.height) * row + self.margin,
                                   self.width,
                                   self.height])
+        cw.get_pos(rLoc)
+        path = rLoc.path
+        self.current = rLoc.pos
 
         self.display_path(path=path)
         # fill in the goal cell with green
@@ -203,8 +206,7 @@ class Animation:
 
         # draw a moving robot, based on current coordinates
         
-        cw.get_pos(rPos)
-        self.current = rPos.pos
+
         robot_center = [round(self.current[1] * (self.width + self.margin) + self.width / 2) + self.margin,
                         round(
                             self.current[0] * (self.height + self.margin) + self.height / 2) + self.margin]
@@ -238,7 +240,7 @@ view_range = 1
 gui = Animation(title="D* Lite Path Planning",
                     width=50,
                     height=50,
-                    margin=0,
+                    margin=1,
                     x_dim=x_dim,
                     y_dim=y_dim,
                     start=start,
@@ -247,6 +249,7 @@ gui = Animation(title="D* Lite Path Planning",
 
 
 def run_gui():
-    path= [(1,1),(2,2),(3,3)]
+    cw.get_pos(rLoc)
+    path = rLoc.path
     while not gui.done:
         gui.run_game(path=path)

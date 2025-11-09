@@ -8,8 +8,9 @@ import functools
 import threading
 
 class RobotPos:
-    def __init__(self, pos):
+    def __init__(self, pos,path=None):
         self.pos = pos
+        self.path=path
 
 def parse_coord(input_str):
     """
@@ -86,16 +87,16 @@ def send_obs_coord(grid_cell):
 def send_no_obs_coord(grid_cell):
     asyncio.run(set_no_obs(grid_cell))
 
-def get_pos(pos):
-    asyncio.run(async_get_pos(pos))
+def get_pos(location):
+    asyncio.run(async_get_pos(location))
 
-async def async_get_pos(pos):
+async def async_get_pos(rLoc):
     uri = "ws://localhost:8765"
 
     try:
         async with connect(uri) as websocket:
             event = {
-                "type": "pos"
+                "type": "get-location"
             }
             
             await websocket.send(json.dumps(event))
@@ -105,9 +106,10 @@ async def async_get_pos(pos):
             try:
                 response = await asyncio.wait_for(websocket.recv(), timeout=40.0)
                 event_pos = json.loads(response)
-                if event_pos["type"] == "pos":
+                if event_pos["type"] == "location":
                     if "current_pos" in event_pos:
-                        pos.pos = tuple(event_pos["current_pos"])
+                        rLoc.pos = tuple(event_pos["current_pos"])
+                        rLoc.path = event_pos["path"]
 
                 print(f"Ответ сервера: {response}")
             except asyncio.TimeoutError:
