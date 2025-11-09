@@ -3,6 +3,11 @@
 import asyncio
 from websockets.asyncio.client import connect
 import json
+import functools
+
+import threading
+
+
 
 
 def parse_coord(input_str):
@@ -33,29 +38,27 @@ def parse_coord(input_str):
         print(f"Неожиданная ошибка: {e}")
         return []
 
+async def set_no_obs(grid_cell):
+    d_nObs = {"no-obs": [grid_cell]}
+    await send_message(d_nObs)
 
-async def send_coord():
+async def set_obs(grid_cell):
+    d_Obs = {"obs": [grid_cell]}
+    await send_message(d_Obs)
+
+
+
+async def send_message(message):
     """
     Подключается к WebSocket серверу и отправляет координаты препятствий.
     """
     uri = "ws://localhost:8765"
-    
+
     try:
         async with connect(uri) as websocket:
-            loop = asyncio.get_running_loop()
-            
-            print("Подключено к серверу!")
-            print("Введите координаты препятствий (например: 1,2;3,4;5,6)")
-            print("Или оставьте пустым для отправки без препятствий")
-            
-            # Неблокирующий ввод
-            raw = await loop.run_in_executor(None, input, "Координаты: ")
-            
-            coords = parse_coord(raw) if raw.strip() else []
-            
             event = {
                 "type": "start",
-                "obs": coords
+                **message
             }
             
             await websocket.send(json.dumps(event))
@@ -74,21 +77,17 @@ async def send_coord():
         print(f"❌ Ошибка: {e}")
 
 
-async def main():
-    """Главная функция с возможностью повторной отправки."""
-    while True:
-        await send_coord()
-        
-        # loop = asyncio.get_running_loop()
-        # again = await loop.run_in_executor(None, input, "\nОтправить еще раз? (y/n): ")
-        
-        # if again.lower() != 'y':
-        #     print("Завершение работы...")
-        #     break
+
+def send_obs_coord(grid_cell):
+    asyncio.run(set_obs(grid_cell))
+
+
+def send_no_obs_coord(grid_cell):
+    asyncio.run(set_no_obs(grid_cell))
 
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.run(send_message())
     except KeyboardInterrupt:
         print("\n\nПрограмма прервана пользователем")

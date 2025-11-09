@@ -1,7 +1,9 @@
 import pygame
 import time
-from grid import OccupancyGridMap
 from typing import List
+import numpy as np
+import client
+import threading
 
 # Define some colors
 BLACK = (0, 0, 0)  # BLACK
@@ -25,11 +27,11 @@ class Animation:
                  width=10,
                  height=10,
                  margin=0,
-                 x_dim=100,
-                 y_dim=50,
-                 start=(0, 0),
-                 goal=(50, 50),
-                 viewing_range=3):
+                 x_dim=10,
+                 y_dim=10,
+                 start=(1, 1),
+                 goal=(8, 8),
+                 viewing_range=1):
 
         self.width = width
         self.height = height
@@ -59,9 +61,13 @@ class Animation:
         V (x=2, y=0)
         x, row
         """
-        self.world = OccupancyGridMap(x_dim=x_dim,
-                                      y_dim=y_dim,
-                                      exploration_setting='8N')
+
+        self.map_extents = (x_dim, y_dim)
+
+        # the obstacle map
+        self.occupancy_grid_map = np.zeros(self.map_extents, dtype=np.uint8)
+
+        self.world = self.map_extents
 
         # Set title of screen
         pygame.display.set_caption(title)
@@ -146,9 +152,10 @@ class Animation:
                 grid_cell = (x, y)
 
                 # set the location in the grid map
-                if self.world.is_unoccupied(grid_cell):
-                    self.world.set_obstacle(grid_cell)
-                    self.observation = {"pos": grid_cell, "type": OBSTACLE}
+                # if self.world.is_unoccupied(grid_cell):
+                #     self.world.set_obstacle(grid_cell)
+                #     self.observation = {"pos": grid_cell, "type": OBSTACLE}
+                client.send_obs_coord(grid_cell)
 
             # remove obstacle by holding right-click
             elif pygame.mouse.get_pressed()[2]:
@@ -163,10 +170,12 @@ class Animation:
                 grid_cell = (x, y)
 
                 # set the location in the grid map
-                if not self.world.is_unoccupied(grid_cell):
-                    print("grid cell: ".format(grid_cell))
-                    self.world.remove_obstacle(grid_cell)
-                    self.observation = {"pos": grid_cell, "type": UNOCCUPIED}
+                # if not self.world.is_unoccupied(grid_cell):
+                #     print("grid cell: ".format(grid_cell))
+                #     self.world.remove_obstacle(grid_cell)
+                #     self.observation = {"pos": grid_cell, "type": UNOCCUPIED}
+
+                client.send_no_obs_coord(grid_cell)
 
         # set the screen background
         self.screen.fill(BLACK)
@@ -175,7 +184,7 @@ class Animation:
         for row in range(self.x_dim):
             for column in range(self.y_dim):
                 # color the cells
-                pygame.draw.rect(self.screen, colors[self.world.occupancy_grid_map[row][column]],
+                pygame.draw.rect(self.screen, colors[self.occupancy_grid_map[row][column]],
                                  [(self.margin + self.width) * column + self.margin,
                                   (self.margin + self.height) * row + self.margin,
                                   self.width,
@@ -211,3 +220,32 @@ class Animation:
 
     # be 'idle' friendly. If you forget this, the program will hang on exit
     pygame.quit()
+
+
+x_dim = 10
+y_dim = 10
+start = (1, 1)
+goal = (8, 8)
+view_range = 1
+
+gui = Animation(title="D* Lite Path Planning",
+                    width=50,
+                    height=50,
+                    margin=0,
+                    x_dim=x_dim,
+                    y_dim=y_dim,
+                    start=start,
+                    goal=goal,
+                    viewing_range=view_range)
+
+
+def run_gui():
+    path= [(1,1),(2,2),(3,3)]
+    while not gui.done:
+        gui.run_game(path=path)
+
+if __name__ == "__main__":
+    try:
+        run_gui()
+    except KeyboardInterrupt:
+        print("\n\nПрограмма прервана пользователем")
