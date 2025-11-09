@@ -9,28 +9,31 @@ import main as mn
 import json
 import threading
 import time
+import functools
 
 
 g_dt = GridDto()
 
-async def echo(websocket, dto):
+async def echo(dto, websocket):
     message = await websocket.recv()
     event = json.loads(message)
+    print("<!------",event["obs"][0],"------!>")
     assert event["type"] == "start"
 
     if "obs" in event:
-        dto.set_obs(event["obs"])
+        dto.set_obs(event["obs"][0])
     elif "no-obs" in event:
-        dto.rem_obs(event["no-obs"])
+        dto.rem_obs(event["no-obs"][0])
         
 
 async def main():
     print("<!!!! Run SERVER !!!!>")
-    async with serve(echo, "localhost", 8765, g_dt) as server:
+    bound_handler = functools.partial(echo, g_dt)
+    async with serve(bound_handler, "localhost", 8765) as server:
         await server.serve_forever()
 
 def moving_robot(dto):
-    time.sleep(2.0)
+    time.sleep(10.0)
     while True:
         path = dto.get_path()
         if dto.get_position() == dto.get_goal():
@@ -42,7 +45,7 @@ def moving_robot(dto):
             else:
                 dto.set_position(path[0])
                 print("Client: Reached Goal!")
-        time.sleep(2.0)
+        time.sleep(6.0)
 
 class DoWork(threading.Thread):
     def __init__(self, shared, task_func, *args, **kwargs):
@@ -71,6 +74,7 @@ if __name__ == "__main__":
 ]
     for t in threads:
         t.start()
+
     for t in threads:
         t.join()
    

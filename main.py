@@ -82,7 +82,7 @@ def run_algorithm(dto):
                 print("Reached goal!")
                 break
 
-            new_position = dto.get_path()[1]
+            new_position = dto.get_position()
             new_observation = dto.observation
             new_map = dto.world
 
