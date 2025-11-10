@@ -22,27 +22,7 @@ class Logic:
         self.vMode = vMode
         # rc.init()
 
-    def get_dir_ix(self, vector):
-        for i, dir_vec in enumerate(DIRECTIONS):
-            if vector == dir_vec:
-                return i
-        raise ValueError("Вектор не соответствует допустимому направлению")
 
-
-    def turns_needed(self, start_vec, target_vec):
-        start_idx = self.get_dir_ix(start_vec)
-        target_idx = self.get_dir_ix(target_vec)
-
-        spinL = (target_idx - start_idx) % 8
-        spinR = (start_idx - target_idx) % 8
-        print(">>>tn>>>r:", spinR, "l:", spinL)
-        turns = (spinR, "right") if spinR <= spinL else (spinL, "left")
-        print("===turns_needed***", turns)
-        return turns
-
-    def update_dir_pos(self, new_pos, new_dir): 
-        self.pos = new_pos 
-        self.dir = new_dir
 
     def move_robot(self, new_pos):
         new_dir = self.get_dir(new_pos)
@@ -75,10 +55,5 @@ class Logic:
 
 
 
-    def get_dir(self, pos):
-        delta_x = pos[0] - self.pos[0]
-        delta_y = pos[1] - self.pos[1]
-        print("***get_dir***")
-        print("delta_x:", delta_x, "delta_y:", delta_y)
-        return (delta_x, delta_y)
+
 

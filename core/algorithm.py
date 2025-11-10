@@ -4,12 +4,13 @@ from dstar.grid import OccupancyGridMap, SLAM
 import server as srv
 import robot.move_logic as lgc
 import time
+from server.grid_dto import GridDto 
 
 OBSTACLE = 255
 UNOCCUPIED = 0
 
 
-def run_algorithm(dto):
+def run_algorithm(dto: GridDto):
 
     """
     set initial values for the map occupancy grid
@@ -108,3 +109,4 @@ def run_algorithm(dto):
 
 if __name__ == "__main__":
     run_algorithm(srv.g_dt)
+
