@@ -1,7 +1,9 @@
 import numpy as np
-from robot.motor_driver import duty_levels
+# from robot.motor_driver import duty_levels
 import math
 
+
+duty_levels = [30, 40, 60, 80, 90]
 k_time_amplifier = 0.1
 times = [0.55,0.4,0.42,0.6,0.5]
 wheelRadius = 30 #mm

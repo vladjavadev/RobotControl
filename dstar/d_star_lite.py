@@ -110,7 +110,6 @@ class DStarLite:
         path = [robot_position]
         self.s_start = robot_position
         self.s_last = self.s_start
-        print("move_and_replan called with robot_position:", self.s_start)
         self.compute_shortest_path()
 
         while self.s_start != self.s_goal:
@@ -120,16 +119,15 @@ class DStarLite:
             min_s = float('inf')
             arg_min = None
             for s_ in succ:
-                print("move_and_replan: checking successor:", s_)
+
                 temp = self.c(self.s_start, s_) + self.g[s_]
-                print("move_and_replan: checking cost:", temp)
+
 
                 if temp < min_s:
                     min_s = temp
                     arg_min = s_
 
-            ### algorithm sometimes gets stuck here for some reason !!! FIX
-            print("move_and_replan: self.s_start:", self.s_start)
+
             self.s_start = arg_min
             path.append(self.s_start)
             # scan graph for changed costs
@@ -137,7 +135,7 @@ class DStarLite:
             #print("len path: {}".format(len(path)))
             # if any edge costs changed
             if changed_edges_with_old_cost:
-                print("moving and replanning self.s_last,self.s_start:",self.s_last,self.s_start)
+
                 self.k_m += heuristic(self.s_last, self.s_start)
                 self.s_last = self.s_start
 

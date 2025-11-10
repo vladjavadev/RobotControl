@@ -1,5 +1,5 @@
-# from robot import controller as rc
-
+from robot import mock_controller as mc
+from server.grid_dto import GridDto
 
 
 DIRECTIONS = [
@@ -15,70 +15,83 @@ DIRECTIONS = [
 
 
 
+
+
+
 class Logic:
-    def __init__(self, pos=(0, 0), dir=(0,0), vMode = 3):
+    def __init__(self, dto:GridDto, pos=(0, 0), dir=(0,0), vMode = 3):
         self.dir = dir
         self.pos = pos
         self.vMode = vMode
-        # rc.init()
+        self.dto = dto
+        self.mk_control = mc.MockController(self.dto)
+
+    
+    def get_dir(self, pos, new_pos):
+        delta_x = new_pos[0]-pos[0]
+        delta_y = new_pos[1] - pos[1]
+        norm_dir = self.normalize_dir((delta_x, delta_y))
+        print(f"   get_dir: delta=({norm_dir[0]}, {norm_dir[1]})")
+        return norm_dir
+    
+    def normalize_dir(self, vector):
+        norm_x = 0 if vector[0] == 0 else (1 if vector[0] > 0 else -1)
+        norm_y = 0 if vector[1] == 0 else (1 if vector[1] > 0 else -1)
+        return (norm_x,norm_y)
 
     def get_dir_ix(self, vector):
         for i, dir_vec in enumerate(DIRECTIONS):
             if vector == dir_vec:
                 return i
-        raise ValueError("Вектор не соответствует допустимому направлению")
-
-
+            
     def turns_needed(self, start_vec, target_vec):
+        if target_vec==start_vec:
+            return (0,"straight")
         start_idx = self.get_dir_ix(start_vec)
         target_idx = self.get_dir_ix(target_vec)
 
         spinL = (target_idx - start_idx) % 8
         spinR = (start_idx - target_idx) % 8
-        print(">>>tn>>>r:", spinR, "l:", spinL)
         turns = (spinR, "right") if spinR <= spinL else (spinL, "left")
-        print("===turns_needed***", turns)
+
         return turns
 
     def update_dir_pos(self, new_pos, new_dir): 
         self.pos = new_pos 
         self.dir = new_dir
+    
+    def move_robot(self, turns, new_pos):
+            if turns[0] > 0:
+                if turns[1] == "right":
+                    self.mk_control.stop()
+                    print("Turn right: ",turns[0])
+                    self.mk_control.turnRight(self.vMode,turns[0])
+                elif turns[1] == "left":
+                    self.mk_control.stop()
+                    print("Turn left: ",turns[0])
+                    self.mk_control.turnLeft(self.vMode,turns[0])
 
-    def move_robot(self, new_pos):
-        new_dir = self.get_dir(new_pos)
-        print("<!---move_robot\n","current dir:", self.dir, "new dir:", new_dir)
-        if new_dir != self.dir:
-            if new_dir == (0,0):
-                print("No movement detected.")
-                return
-            turns = self.turns_needed(self.dir, new_dir)
-            turn_side = ""
-            if turns[1] == "right":
-                turn_side = "right"
-                # rotateFunc = rc.turnRight
-            else:
-                turn_side = "left"
-                # rotateFunc = rc.turnLeft
+            self.mk_control.forward(self.vMode, 1)
 
-            for _ in range(turns[0]):
-                # if turns[1] == "right":
-                #     print("Turning right num:", turns[0])
-                #     rc.turnRight(self.vMode)
-                # else:
-                #     print("Turning left num:", turns[0])
-                #     rc.turnLeft(self.vMode)
-                print("Turning {} num: {}".format(turn_side, turns[0]))
-                # rotateFunc(self.vMode)
+            
+    def build_route(self,pos,new_pos):
+        if pos == new_pos:
+            print("<<<Destination reached")
+            self.mk_control.stop()
+            return
+        new_dir = self.get_dir(pos,new_pos)
+        turns = self.turns_needed(self.dir,new_dir)
+        self.move_robot(turns,new_pos)
+        self.update_dir_pos(new_pos,new_dir)
 
-        # rc.forward(self.vMode)
-        self.update_dir_pos(new_pos, new_dir)
+
+    
 
 
 
-    def get_dir(self, pos):
-        delta_x = pos[0] - self.pos[0]
-        delta_y = pos[1] - self.pos[1]
-        print("***get_dir***")
-        print("delta_x:", delta_x, "delta_y:", delta_y)
-        return (delta_x, delta_y)
+    
+
+
+
+
 

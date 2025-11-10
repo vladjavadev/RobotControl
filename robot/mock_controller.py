@@ -1,5 +1,5 @@
 from robot import kinematic as rk
-from robot import motor_driver as rd
+# from robot import motor_driver as rd
 from server.grid_dto import GridDto
 import time
 
@@ -13,7 +13,6 @@ class MockController:
     def __init__(self, dto:GridDto):
         self.dto=dto
         rk.init()
-        rd.init()
 
 
     def clamp_speed(self, value, default=1):
@@ -25,29 +24,27 @@ class MockController:
         cM = self.clamp_speed(speed_mode)
         vl = rk.speeds[cM-1]
         turnTime = rk.get_deltaT(vl, 0, 45*step)
-        print(f"Turning left{turnTime}")
-        rd.turnLeft(turnTime,cM)
-        rd.stop()
+        print("Turning left")
+        time.sleep(turnTime)
 
 
     def turnRight(self, speed_mode=1,step=1):
         cM = self.clamp_speed(speed_mode)
         vr = rk.speeds[cM-1]
         turnTime = rk.get_deltaT(0, vr, 45*step)
-        print(f"Turning right{turnTime}")
-        rd.turnRight(turnTime, cM)
-        rd.stop()
+        print("Turning right")
+        time.sleep(turnTime)
+ 
 
     def forward(self, speed_mode=1):
         cM = self.clamp_speed(speed_mode)
         print("!!!Move forward")
-        rd.forward(self.unit,cM)
+        time.sleep(self.unit)
 
-    def reverse(self,speed_mode=1):
+
+    def reverse(self, speed_mode=1):
         cM = self.clamp_speed(speed_mode)
-        print("Moveing reverse")
-        rd.reverse(self.unit, cM)
+        time.sleep(self.unit)
 
     def stop(self):
-        rd.stop()
         print("RD stop")

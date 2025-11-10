@@ -4,12 +4,13 @@ from dstar.grid import OccupancyGridMap, SLAM
 import server as srv
 import robot.move_logic as lgc
 import time
+from server.grid_dto import GridDto 
 
 OBSTACLE = 255
 UNOCCUPIED = 0
 
 
-def run_algorithm(dto):
+def run_algorithm(dto: GridDto):
 
     """
     set initial values for the map occupancy grid
@@ -23,7 +24,7 @@ def run_algorithm(dto):
     y_dim = 10
     start = (1, 1)
     goal = (8, 8)
-    view_range = 2
+    view_range = 5
 
 
     new_map = dto.world
@@ -65,34 +66,35 @@ def run_algorithm(dto):
         
     print(f"Initial path found: {path}")
     
-    logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
+    # logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
     for obs in obstacles:
         new_map.set_obstacle(obs)
     # Only proceed if we have a valid path
     if path:
         
         while True:
-            time.sleep(1.0)
+            time.sleep(0.05)
+            start = time.time()
+
             dto.set_path(path)
             # update the map
             # print(path)
             # drive gui
-            if path[0]==dto.get_goal():
-                logic.move_robot(path[0])
-                print("Reached goal!")
-                break
+            # if path[0]==dto.get_goal():
+            #     logic.move_robot(path,dto.get_position())
+            #     print("Reached goal!")
+            #     break
 
             new_position = dto.get_position()
             new_observation = dto.observation
             new_map = dto.world
 
-            logic.move_robot(new_position)
-            print("current pos", new_position)
+            # logic.move_robot(path,new_position)
             if new_observation is not None:
                 old_map = new_map
                 slam.set_ground_truth_map(gt_map=new_map)
 
-            print("new_pos and last_pos",new_position,last_position)
+            # print("new_pos and last_pos",new_position,last_position)
             if new_position != last_position:
                 last_position = new_position
 
@@ -106,5 +108,10 @@ def run_algorithm(dto):
 
                 path, g, rhs = dstar.move_and_replan(robot_position=new_position)
 
+                end = time.time()
+                print(f"Время расчёта: {end - start:.6f} секунд")
+
+
 if __name__ == "__main__":
     run_algorithm(srv.g_dt)
+
