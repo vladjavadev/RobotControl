@@ -17,6 +17,8 @@ class TrUnit:
         self.side = side
         self.moveStep = moveStep
         self.rotateStep = rotateStep
+    def __eq__(self,other):
+        return self.side==other.side and self.moveStep==other.moveStep and self.rotateStep==other.rotateStep
 
 class MotionAccumulator:
     def __init__(self):
@@ -145,9 +147,8 @@ class MotionAccumulator:
 
         spinL = (target_idx - start_idx) % 8
         spinR = (start_idx - target_idx) % 8
-        print(f"   Поворот: право={spinR}×45°, лево={spinL}×45°")
         turns = (spinR, "right") if spinR <= spinL else (spinL, "left")
-        print(f"   ✓ Выбрано: {turns[1]} на {turns[0]}×45° = {turns[0]*45}°")
+
         return turns
 
     def update_dir_pos(self, new_pos, new_dir): 

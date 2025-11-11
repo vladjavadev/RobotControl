@@ -11,7 +11,7 @@ class GridDto:
         self.y_dim = y_dim
         self.start = start
         self.current = start
-        self.observation = {"pos": None, "type": None}
+        self.observation = None
         self.goal = goal
         self.viewing_range = viewing_range
         self.path = None

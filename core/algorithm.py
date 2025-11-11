@@ -24,7 +24,7 @@ def run_algorithm(dto: GridDto):
     y_dim = 10
     start = (1, 1)
     goal = (8, 8)
-    view_range = 2
+    view_range = 5
 
 
     new_map = dto.world
@@ -70,30 +70,31 @@ def run_algorithm(dto: GridDto):
     for obs in obstacles:
         new_map.set_obstacle(obs)
     # Only proceed if we have a valid path
+    is_mv = True
+    dto.set_position(last_position)
     if path:
-        
+        dto.set_path(path)
         while True:
             time.sleep(1.0)
-            dto.set_path(path)
-            # update the map
-            # print(path)
-            # drive gui
-            if path[0]==dto.get_goal():
-                logic.move_robot(path,dto.get_position())
-                print("Reached goal!")
-                break
 
             new_position = dto.get_position()
             new_observation = dto.observation
             new_map = dto.world
 
-            logic.move_robot(path,new_position)
+            
             if new_observation is not None:
                 old_map = new_map
                 slam.set_ground_truth_map(gt_map=new_map)
+                is_mv=True
+
 
             print("new_pos and last_pos",new_position,last_position)
             if new_position != last_position:
+                
+                # update the map
+                # print(path)
+                # drive gui
+
                 last_position = new_position
 
                 # slam
@@ -105,6 +106,16 @@ def run_algorithm(dto: GridDto):
                 # d star
 
                 path, g, rhs = dstar.move_and_replan(robot_position=new_position)
+                dto.set_path(path)
+                if is_mv:
+                    logic.move_robot(path,new_position)
+                    is_mv = False
+
+            if path[0]==dto.get_goal():
+                # logic.move_robot(path,dto.get_position())
+                print("Reached goal!")
+                break
+
 
 if __name__ == "__main__":
     run_algorithm(srv.g_dt)
