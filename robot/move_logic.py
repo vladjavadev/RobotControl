@@ -1,4 +1,5 @@
 # from robot import controller as rc
+from robot import motion_accum as mcc
 
 
 
@@ -15,6 +16,9 @@ DIRECTIONS = [
 
 
 
+mAObj = mcc.MotionAccumulator()
+mAObj.dir = (0,1)
+
 class Logic:
     def __init__(self, pos=(0, 0), dir=(0,0), vMode = 3):
         self.dir = dir
@@ -24,34 +28,30 @@ class Logic:
 
 
 
-    def move_robot(self, new_pos):
-        new_dir = self.get_dir(new_pos)
-        print("<!---move_robot\n","current dir:", self.dir, "new dir:", new_dir)
-        if new_dir != self.dir:
-            if new_dir == (0,0):
-                print("No movement detected.")
-                return
-            turns = self.turns_needed(self.dir, new_dir)
-            turn_side = ""
-            if turns[1] == "right":
-                turn_side = "right"
-                # rotateFunc = rc.turnRight
-            else:
-                turn_side = "left"
-                # rotateFunc = rc.turnLeft
+    def move_robot(self, path, pos):
+        if mAObj.pos != pos:
+            mAObj.path = path
+            mAObj.pos = pos
+            mAObj.accumulateMotion()
+            trajectory = mAObj.get_trajectory()
+            print(trajectory)
+            mAObj.old_path = path
 
-            for _ in range(turns[0]):
-                # if turns[1] == "right":
-                #     print("Turning right num:", turns[0])
-                #     rc.turnRight(self.vMode)
-                # else:
-                #     print("Turning left num:", turns[0])
-                #     rc.turnLeft(self.vMode)
-                print("Turning {} num: {}".format(turn_side, turns[0]))
-                # rotateFunc(self.vMode)
+            for node in trajectory:
+                if node.rotateStep > 0:
+                    if node.side == "right":
+                        print("Turn right: ",node.rotateStep)
+                        # rc.turnRight(self.vMode,node.rotateStep)
+                    elif node.side == "left":
+                        print("Turn left: ",node.rotateStep)
+                        # rc.turnLeft(self.vMode,node.rotateStep)
+                if node.moveStep>0:
+                    print("move forward: ",node.moveStep)
+                    # rc.forward(self.vMode, node.moveStep)
+            mAObj.trjList = []
 
-        # rc.forward(self.vMode)
-        self.update_dir_pos(new_pos, new_dir)
+
+    
 
 
 

@@ -35,9 +35,9 @@ def calcRobotPos(x, y,curTeta, dOmega, irc):
     x0 = x - irc*math.sin(curTeta)
     y0 = y + irc*math.cos(curTeta)
 
-    irc_v = np.array([[x0][y0]])
-    P_old = np.array([[x],[y]])
-    P_offset =  P_old - irc_v
+    irc_v = np.array([[x0], [y0]])
+    P_old = np.array([[x], [y]])
+    P_offset = P_old - irc_v
 
     cos_dt = math.cos(dOmega)
     sin_dt = math.sin(dOmega)

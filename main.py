@@ -1,17 +1,12 @@
-
 from dstar.d_star_lite import DStarLite
 from dstar.grid import OccupancyGridMap, SLAM
-import server as srv
-import robot.move_logic as lgc
-import time
-from server.grid_dto import GridDto 
+from robot.move_logic import Logic
+import numpy as np
 
 OBSTACLE = 255
 UNOCCUPIED = 0
 
-
-def run_algorithm(dto: GridDto):
-
+if __name__ == '__main__':
     """
     set initial values for the map occupancy grid
     |----------> y, column
@@ -24,29 +19,40 @@ def run_algorithm(dto: GridDto):
     y_dim = 10
     start = (1, 1)
     goal = (8, 8)
-    view_range = 2
+    view_range = 1
 
-
-    new_map = dto.world
+    # Initialize the map
+    new_map = OccupancyGridMap(x_dim=x_dim,
+                              y_dim=y_dim,
+                              exploration_setting='8N')
     
     # Add obstacles
     obstacles = [
-        (4, 4), (3, 4), (3, 5),  # Horizontal wall
-         (7, 3), (7, 4),  # Another wall
+        (3, 3), (3, 4), (3, 5),  # Horizontal wall
+        (7, 2), (7, 3), (7, 4),  # Another wall
         (5, 7), (6, 7), (7, 7),  # Vertical wall
     ]
     
     # Place obstacles
     for obs in obstacles:
-        new_map.set_obstacle(obs)
+        new_map.occupancy_grid_map[obs[0]][obs[1]] = OBSTACLE
     
+    # Add terrain weights (1.0 is normal, higher values are harder to traverse)
+    difficult_terrain = [
+        ((2, 2), 2.0),   # Muddy area
+        ((4, 4), 1.5),   # Rocky terrain
+        ((6, 6), 3.0),   # Very difficult terrain
+        ((8, 2), 2.5),   # Rough patch
+    ]
+    
+    # Set terrain weights
+    for pos, weight in difficult_terrain:
+        new_map.weight_map[pos[0]][pos[1]] = weight
+        
     old_map = new_map
 
     new_position = start
     last_position = start
-
-    # new_observation = None
-    # type = OBSTACLE
 
     # D* Lite (optimized)
     dstar = DStarLite(map=new_map,
@@ -66,46 +72,36 @@ def run_algorithm(dto: GridDto):
         
     print(f"Initial path found: {path}")
     
-    logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
-    for obs in obstacles:
-        new_map.set_obstacle(obs)
+    # Initialize robot control logic with start position and initial direction (North)
+    logic = Logic(pos=new_position, dir=(0,1), vMode=2)
+    
     # Only proceed if we have a valid path
     if path:
-        
-        while True:
-            time.sleep(1.0)
-            dto.set_path(path)
-            # update the map
-            # print(path)
-            # drive gui
-            if path[0]==dto.get_goal():
-                logic.move_robot(path,dto.get_position())
-                print("Reached goal!")
-                break
+        for step in path:
+            # Update robot position
+            new_position = step
+            new_observation = None
+            
+            # Send movement commands to the robot
+            logic.move_robot(path, new_position)
 
-            new_position = dto.get_position()
-            new_observation = dto.observation
-            new_map = dto.world
-
-            logic.move_robot(path,new_position)
             if new_observation is not None:
                 old_map = new_map
                 slam.set_ground_truth_map(gt_map=new_map)
 
-            print("new_pos and last_pos",new_position,last_position)
             if new_position != last_position:
                 last_position = new_position
 
-                # slam
+                # Update SLAM map
                 new_edges_and_old_costs, slam_map = slam.rescan(global_position=new_position)
-
                 dstar.new_edges_and_old_costs = new_edges_and_old_costs
                 dstar.sensed_map = slam_map
 
-                # d star
-
+                # Replan path if needed
                 path, g, rhs = dstar.move_and_replan(robot_position=new_position)
-
-if __name__ == "__main__":
-    run_algorithm(srv.g_dt)
-
+                
+                if path is None:
+                    print("Lost path to goal! Stopping robot.")
+                    break
+                
+                print(f"New path segment: {path}")
