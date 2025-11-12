@@ -1,28 +1,25 @@
-from robot import kinematic as rk
-from robot import motor_driver as rd
+
 from core.work import DoWork
 import time
-
 
 speed_mode_max = 4
 speed_mode_min = 1
 
 
 def init():
-    rk.init()
-    rd.init()
+    print("mockController: Init")
 
-def run(flag):
-    task = DoWork(shared=flag, task_func=_check_interrupt, name='check_interrupt')
+def run(logic):
+    task = DoWork(shared=logic, task_func=_check_interrupt, name='check_interrupt')
     task.start()
 
-def _check_interrupt(flag):
+def _check_interrupt(logic):
     while True:
-        time.sleep(1)
+        time.sleep(1.0)
         print("check_interrupt")
-        if flag:
+        if logic.is_interrupt:
             print("Interruption")
-            rd.stop()
+
 
 
 def clamp_speed(value, default=1):
@@ -32,34 +29,26 @@ def clamp_speed(value, default=1):
     
 def turnLeft(speed_mode=1,step=1):
     cM = clamp_speed(speed_mode)
-    vl = rk.speeds[cM-1]
-    turnTime = rk.get_deltaT(vl, 0, 45*step)
+
     print("Turning left")
-    rd.turnLeft(turnTime,cM)
-    rd.stop()
+
 
 
 def turnRight(speed_mode=1,step=1):
     cM = clamp_speed(speed_mode)
-    vr = rk.speeds[cM-1]
-    turnTime = rk.get_deltaT(0, vr, 45*step)
+
     print("Turning right")
-    rd.turnRight(turnTime, cM)
-    rd.stop()
+
 
 def forward(speed_mode=1,step=1):
-    rd.stop()
+
     cM = clamp_speed(speed_mode)
     print("Moving forward")
-    rd.forward(2*step, cM)
-    rd.stop()
 
 def reverse(speed_mode=1,step=1):
-    rd.stop()
+
     cM = clamp_speed(speed_mode)
     print("Moveing reverse")
-    rd.reverse(2*step, cM)
-    rd.stop()
 
 def stop():
-    rd.stop()
+    print("Mock Stop")

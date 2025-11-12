@@ -117,7 +117,6 @@ class MotionAccumulator:
             
             # Сохраняем последний сегмент (если есть накопленные шаги)
             if moveStep > 0 and self.dir != (0, 0):
-                if len(self.trjList)>0:
                     self.trjList.append(
                         TrUnit(side=turn_buf[1], rotateStep=turn_buf[0], moveStep=moveStep)
                     )

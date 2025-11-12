@@ -26,7 +26,6 @@ def run_algorithm(dto: GridDto):
     goal = (8, 8)
     view_range = 5
 
-
     new_map = dto.world
     
     # Add obstacles
@@ -53,6 +52,10 @@ def run_algorithm(dto: GridDto):
                       s_start=start,
                       s_goal=goal)
 
+    logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
+    for obs in obstacles:
+        new_map.set_obstacle(obs)
+    dto.set_position(last_position)
     # SLAM to detect vertices
     slam = SLAM(map=new_map,
                 view_range=view_range)
@@ -66,14 +69,13 @@ def run_algorithm(dto: GridDto):
         
     print(f"Initial path found: {path}")
     
-    logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
-    for obs in obstacles:
-        new_map.set_obstacle(obs)
+
     # Only proceed if we have a valid path
-    is_mv = True
-    dto.set_position(last_position)
+    is_obs = False
+    ix = 0
     if path:
         dto.set_path(path)
+        logic.build_route(path,new_position)
         while True:
             time.sleep(1.0)
 
@@ -85,7 +87,9 @@ def run_algorithm(dto: GridDto):
             if new_observation is not None:
                 old_map = new_map
                 slam.set_ground_truth_map(gt_map=new_map)
-                is_mv=True
+                logic.is_interrupt=True
+                is_obs=True
+                dto.observation = None
 
 
             print("new_pos and last_pos",new_position,last_position)
@@ -106,10 +110,12 @@ def run_algorithm(dto: GridDto):
                 # d star
 
                 path, g, rhs = dstar.move_and_replan(robot_position=new_position)
+                if is_obs:
+                    logic.build_route(path, new_position)
+                    is_obs=False
+                    logic.is_interrupt=False
                 dto.set_path(path)
-                if is_mv:
-                    logic.move_robot(path,new_position)
-                    is_mv = False
+                ix+=1
 
             if path[0]==dto.get_goal():
                 # logic.move_robot(path,dto.get_position())
