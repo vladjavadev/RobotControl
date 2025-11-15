@@ -22,7 +22,19 @@ class GridDto:
         self.world = OccupancyGridMap(x_dim=x_dim,
                                       y_dim=y_dim,
                                       exploration_setting='8N')
+    def set_start(self, start):
+        self.start=tuple(start[0],start[1])
 
+    def set_goal(self, goal):
+        self.goal=tuple(goal[0],goal[1])
+
+
+    def set_dim(self, dim_tuple):
+        self.x_dim=dim_tuple[0]
+        self.y_dim=dim_tuple[1]
+        self.world = OccupancyGridMap(x_dim=self.x_dim,
+                                      y_dim=self.y_dim,
+                                      exploration_setting='8N')
 
     def set_path(self, path=None):
         self.path = path

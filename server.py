@@ -21,7 +21,7 @@ async def echo(dto:GridDto, websocket:ServerConnection):
     event = json.loads(message)
    
     # assert event["type"] == "start"
-    if event["type"] == "start":
+    if event["type"] == "set-obs":
         
         if "obs" in event:
             print("<!------",event["obs"][0],"------!>")
@@ -30,13 +30,28 @@ async def echo(dto:GridDto, websocket:ServerConnection):
             dto.rem_obs(event["no-obs"][0])
     elif event["type"] == "get-location":
         pos = dto.get_position()
+        goal= dto.get_goal()
         path = dto.get_path()
         event_location = {
             "type":"location",
             "current_pos":pos,
+            "goal":goal,
             "path":path
         }
         await websocket.send(json.dumps(event_location))
+
+    elif event["type"] == "init":
+        dto.set_start(event["start"])
+        dto.set_goal(event["goal"])
+
+        dto.set_dim(event["grid_dim"])
+
+        m_threads = [DoWork(shared=g_dt, task_func=agm.run_algorithm, name='a'), 
+        DoWork(shared=logic, task_func=moving_robot, name='b')]
+        for i in m_threads:
+            i.start()
+        # for i in m_threads:
+        #     i.join()
     else:
         KeyError("NO route finded")
 
@@ -93,10 +108,7 @@ def run_server(dto):
 
 if __name__ == "__main__":
  
-    threads = [ DoWork(shared=g_dt, task_func=agm.run_algorithm, name='a'), 
-                DoWork(shared=logic, task_func=moving_robot, name='b'),
-                DoWork(shared=g_dt, task_func=run_server, name='c')
-]
+    threads = [ DoWork(shared=g_dt, task_func=run_server, name='c')]
     for t in threads:
         t.start()
 

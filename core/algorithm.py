@@ -20,25 +20,24 @@ def run_algorithm(dto: GridDto):
     V (x=2, y=0)
     x, row
     """
-    x_dim = 10
-    y_dim = 10
-    start = (1, 1)
-    goal = (8, 8)
+
+    start = tuple(dto.start)
+    goal = tuple(dto.goal)
     view_range = 5
 
 
     new_map = dto.world
     
     # Add obstacles
-    obstacles = [
-        (4, 4), (3, 4), (3, 5),  # Horizontal wall
-         (7, 3), (7, 4),  # Another wall
-        (5, 7), (6, 7), (7, 7),  # Vertical wall
-    ]
+    # obstacles = [
+    #     (4, 4), (3, 4), (3, 5),  # Horizontal wall
+    #      (7, 3), (7, 4),  # Another wall
+    #     (5, 7), (6, 7), (7, 7),  # Vertical wall
+    # ]
     
-    # Place obstacles
-    for obs in obstacles:
-        new_map.set_obstacle(obs)
+    # # Place obstacles
+    # for obs in obstacles:
+    #     new_map.set_obstacle(obs)
     
     old_map = new_map
 
@@ -67,8 +66,8 @@ def run_algorithm(dto: GridDto):
     print(f"Initial path found: {path}")
     
     # logic = lgc.Logic(pos=new_position, dir=(0,1), vMode=2)
-    for obs in obstacles:
-        new_map.set_obstacle(obs)
+    # for obs in obstacles:
+    #     new_map.set_obstacle(obs)
     # Only proceed if we have a valid path
     if path:
         
