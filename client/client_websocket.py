@@ -3,63 +3,41 @@
 import asyncio
 from websockets.asyncio.client import connect
 import json
-import functools
+import utils.location_dto as ldt
+import utils.dim_dto as ddt
 
-import threading
 
-class RobotPos:
-    def __init__(self, pos,path=None):
-        self.pos = pos
-        self.path=path
 
-def parse_coord(input_str):
-    """
-    Парсит строку координат вида 'x1,y1;x2,y2;...'
-    Возвращает список кортежей [(x1, y1), (x2, y2), ...]
-    """
-    try:
-        # Убираем лишние пробелы
-        input_str = input_str.strip()
-        if not input_str:
-            print("Пустая строка!")
-            return []
-        
-        coords = [tuple(map(int, pair.split(','))) for pair in input_str.split(';')]
-        
-        # Проверяем, что все пары имеют 2 элемента
-        for coord in coords:
-            if len(coord) != 2:
-                print(f"Неверная пара координат: {coord}")
-                return []
-        
-        return coords
-    except ValueError as e:
-        print(f"Ошибка парсинга: {e}. Используй формат: x1,y1;x2,y2;...")
-        return []
-    except Exception as e:
-        print(f"Неожиданная ошибка: {e}")
-        return []
+
+loc = ldt.LocationDTO()
+dim_grid = ddt.DimDTO()
+m_types = ["set-obs","init"]
+
 
 async def set_no_obs(grid_cell):
     d_nObs = {"no-obs": [grid_cell]}
-    await send_message(d_nObs)
+    await send_message(m_types[0],d_nObs)
 
 async def set_obs(grid_cell):
     d_Obs = {"obs": [grid_cell]}
-    await send_message(d_Obs)
+    await send_message(m_types[0], d_Obs)
+
+async def init_grid(grid_dim:tuple[int,int],start:tuple[int,int],goal:tuple[int,int]):
+    d_init = {"grid_dim":grid_dim,
+              "start":start,
+              "goal":goal
+              }
+    await send_message(m_types[1], d_init)
 
 
+async def send_message(type, message):
 
-async def send_message(message):
-    """
-    Подключается к WebSocket серверу и отправляет координаты препятствий.
-    """
     uri = "ws://localhost:8765"
 
     try:
         async with connect(uri) as websocket:
             event = {
-                "type": "start",
+                "type": type,
                 **message
             }
             
@@ -79,18 +57,21 @@ async def send_message(message):
         print(f"❌ Ошибка: {e}")
 
 
-
 def send_obs_coord(grid_cell):
     asyncio.run(set_obs(grid_cell))
+
+
+def send_dim_grid(dim_grid,start,goal):
+    asyncio.run(init_grid(dim_grid,start,goal))
 
 
 def send_no_obs_coord(grid_cell):
     asyncio.run(set_no_obs(grid_cell))
 
 def get_pos(location):
-    asyncio.run(async_get_pos(location))
+    asyncio.run(fetch_location(location))
 
-async def async_get_pos(rLoc):
+async def fetch_location(location):
     uri = "ws://localhost:8765"
 
     try:
@@ -108,8 +89,10 @@ async def async_get_pos(rLoc):
                 event_pos = json.loads(response)
                 if event_pos["type"] == "location":
                     if "current_pos" in event_pos:
-                        rLoc.pos = tuple(event_pos["current_pos"])
-                        rLoc.path = event_pos["path"]
+                        goal=tuple(event_pos["goal"])
+                        pos = tuple(event_pos["current_pos"])
+                        path = event_pos["path"]
+                        loc.update(pos,path,goal)
 
                 print(f"Ответ сервера: {response}")
             except asyncio.TimeoutError:
