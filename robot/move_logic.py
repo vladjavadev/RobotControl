@@ -71,7 +71,7 @@ class Logic:
                     print("Turn left: ",turns[0])
                     self.mk_control.turnLeft(self.vMode,turns[0])
 
-            self.mk_control.forward(self.vMode, 1)
+            self.mk_control.forward(self.vMode)
 
             
     def build_route(self,pos,new_pos):

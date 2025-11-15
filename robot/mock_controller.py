@@ -7,7 +7,7 @@ import time
 class MockController:
     speed_mode_max = 4
     speed_mode_min = 1
-    unit = 2#time in seconds to accross grid cell
+    unit = 0.5#time in seconds to accross grid cell
     ix=0
 
     def __init__(self, dto:GridDto):

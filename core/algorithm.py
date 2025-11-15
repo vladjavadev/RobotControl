@@ -73,43 +73,50 @@ def run_algorithm(dto: GridDto):
     if path:
         
         while True:
-            time.sleep(0.05)
-            start = time.time()
+            try:
+                
+                time.sleep(0.05)
+                start = time.time()
 
-            dto.set_path(path)
-            # update the map
-            # print(path)
-            # drive gui
-            # if path[0]==dto.get_goal():
-            #     logic.move_robot(path,dto.get_position())
-            #     print("Reached goal!")
-            #     break
+                dto.set_path(path)
+                # update the map
+                # print(path)
+                # drive gui
+                # if path[0]==dto.get_goal():
+                #     logic.move_robot(path,dto.get_position())
+                #     print("Reached goal!")
+                #     break
 
-            new_position = dto.get_position()
-            new_observation = dto.observation
-            new_map = dto.world
+                new_position = dto.get_position()
+                new_observation = dto.observation
+                new_map = dto.world
 
-            # logic.move_robot(path,new_position)
-            if new_observation is not None:
-                old_map = new_map
-                slam.set_ground_truth_map(gt_map=new_map)
+                # logic.move_robot(path,new_position)
+                if new_observation is not None:
+                    old_map = new_map
+                    slam.set_ground_truth_map(gt_map=new_map)
 
-            # print("new_pos and last_pos",new_position,last_position)
-            if new_position != last_position:
-                last_position = new_position
+                # print("new_pos and last_pos",new_position,last_position)
+                if new_position != last_position:
+                    dto._lock.acquire()
+                    last_position = new_position
 
-                # slam
-                new_edges_and_old_costs, slam_map = slam.rescan(global_position=new_position)
+                    # slam
+                    new_edges_and_old_costs, slam_map = slam.rescan(global_position=new_position)
 
-                dstar.new_edges_and_old_costs = new_edges_and_old_costs
-                dstar.sensed_map = slam_map
+                    dstar.new_edges_and_old_costs = new_edges_and_old_costs
+                    dstar.sensed_map = slam_map
 
-                # d star
+                    # d star
 
-                path, g, rhs = dstar.move_and_replan(robot_position=new_position)
+                    path, g, rhs = dstar.move_and_replan(robot_position=new_position)
 
-                end = time.time()
-                print(f"Время расчёта: {end - start:.6f} секунд")
+                    end = time.time()
+                    print(f"Время расчёта: {end - start:.6f} секунд")
+                    dto._lock.release()
+            except TypeError as e:
+                print(e)
+
 
 
 if __name__ == "__main__":
