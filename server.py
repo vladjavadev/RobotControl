@@ -16,7 +16,10 @@ import functools
 g_dt = GridDto()
 logic = Logic(g_dt,dir=(0,1))
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 01e13ff17510a775f81a9932497227c643e14209
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
     event = json.loads(message)
