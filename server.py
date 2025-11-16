@@ -40,6 +40,13 @@ async def echo(dto:GridDto, websocket:ServerConnection):
         }
         await websocket.send(json.dumps(event_location))
 
+    elif event["type"] == "get-status":
+        event_connected = {
+            "type":"get-status",
+            "status":"connected"
+        }
+        await websocket.send(json.dumps(event_connected))
+
     elif event["type"] == "init":
         dto.set_start(event["start"])
         dto.set_goal(event["goal"])
