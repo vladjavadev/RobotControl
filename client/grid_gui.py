@@ -23,8 +23,8 @@ colors = {
     255: OBSTACLE
 }
 
-def check_loop():
-    while True:
+def check_loop(gui):
+    while not gui.done:
         cw.get_pos(cw.loc)
         time.sleep(0.5)
 
@@ -122,7 +122,7 @@ class Animation:
                                                       self.height])
 
     def run_game(self):
-        thread = threading.Thread(target=check_loop, daemon=True)
+        thread = threading.Thread(target=check_loop, daemon=True,args=(self,))
         thread.start()
         path = cw.loc.get_path()
         while not self.done:

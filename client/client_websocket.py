@@ -5,12 +5,15 @@ from websockets.asyncio.client import connect
 import json
 import utils.location_dto as ldt
 import utils.dim_dto as ddt
+import utils.connect_dto as con_dto
 
 
 
 
 loc = ldt.LocationDTO()
 dim_grid = ddt.DimDTO()
+con = con_dto.Connection()
+
 m_types = ["set-obs","init"]
 
 
@@ -71,6 +74,9 @@ def send_no_obs_coord(grid_cell):
 def get_pos(location):
     asyncio.run(fetch_location(location))
 
+def get_connection(con_dto):
+    asyncio.run(fetch_connection_status(con_dto))
+
 async def fetch_location(location):
     uri = "ws://localhost:8765"
 
@@ -103,6 +109,35 @@ async def fetch_location(location):
     except Exception as e:
         print(f"❌ Ошибка: {e}")
 
+
+
+async def fetch_connection_status(con_dto):
+    uri = "ws://localhost:8765"
+
+    try:
+        async with connect(uri) as websocket:
+            event = {
+                "type": "get-status"
+            }
+            
+            await websocket.send(json.dumps(event))
+            print(f"✓ Событие отправлено: {event}")
+            
+            # Опционально: ожидание ответа от сервера
+            try:
+                response = await asyncio.wait_for(websocket.recv(), timeout=40.0)
+                event = json.loads(response)
+                if event["type"] == "get-status":
+                    if "status" in event:
+                        con.update(event["status"])
+                print(f"Ответ сервера: {response}")
+            except asyncio.TimeoutError:
+                print("Сервер не ответил в течение 5 секунд")
+            
+    except ConnectionRefusedError:
+        print("❌ Не удалось подключиться к серверу. Проверьте, что сервер запущен на ws://localhost:8765")
+    except Exception as e:
+        print(f"❌ Ошибка: {e}")
 
 if __name__ == "__main__":
     try:
