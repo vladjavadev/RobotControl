@@ -41,12 +41,15 @@ class MockController:
     def forward(self, speed_mode=1):
         cM = self.clamp_speed(speed_mode)
         print("!!!Move forward")
-        rd.forward(self.unit,cM)
+        rd.forward(cM)
+        time.sleep(self.unit)
 
     def reverse(self,speed_mode=1):
         cM = self.clamp_speed(speed_mode)
         print("Moveing reverse")
-        rd.reverse(self.unit, cM)
+        rd.reverse(cM)
+        time.sleep(self.unit)
+
 
     def stop(self):
         rd.stop()

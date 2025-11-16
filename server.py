@@ -40,6 +40,13 @@ async def echo(dto:GridDto, websocket:ServerConnection):
         }
         await websocket.send(json.dumps(event_location))
 
+    elif event["type"] == "get-status":
+        event_connected = {
+            "type":"get-status",
+            "status":"connected"
+        }
+        await websocket.send(json.dumps(event_connected))
+
     elif event["type"] == "init":
         dto.set_start(event["start"])
         dto.set_goal(event["goal"])
@@ -74,7 +81,9 @@ def moving_robot(logic: Logic):
     
     while True:
         path = logic.dto.get_path()
-        if logic.dto.get_position() == logic.dto.get_goal():
+        if logic.dto.get_position() == tuple(logic.dto.get_goal()):
+            print("Client: Reached Goal!")
+            logic.build_route(path[0],path[0])
             break
 
         if path is not None:

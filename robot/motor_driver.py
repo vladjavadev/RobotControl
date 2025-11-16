@@ -53,14 +53,14 @@ def stop():
     time.sleep(0.3)
 
 
-def forward(dTime, vMode=1):
+def forward(vMode=1):
     dc = get_dc(vMode)
     PWM.set_duty_cycle(pin_FmotL, dc*100)
     PWM.set_duty_cycle(pin_FmotR, dc*100)
-    time.sleep(dTime)
 
-def reverse(dTime, vMode=1):
+
+def reverse(vMode=1):
     dc = get_dc(vMode)
     PWM.set_duty_cycle(pin_BmotL, dc*100)
     PWM.set_duty_cycle(pin_BmotR, dc*100)
-    time.sleep(dTime)
+
