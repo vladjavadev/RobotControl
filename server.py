@@ -72,30 +72,33 @@ async def get_pos(dto: GridDto, websocket:ServerConnection):
 async def main():
     print("<!!!! Run SERVER !!!!>")
     bound_handler = functools.partial(echo, g_dt)
-    async with serve(bound_handler, "localhost", 8765) as server:
+    async with serve(bound_handler, "0.0.0.0", 8765) as server:
         await server.serve_forever()
 
 
 def moving_robot(logic: Logic):
     time.sleep(5.0)
-    
+    last_path = []
     while True:
         try:
+            time.sleep(0.05)
             path = logic.dto.get_path()
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print("Client: Reached Goal!")
                 logic.build_route(path[0],path[0])
                 break
 
-            if path is not None:
+            if path is not None and path!=last_path:
                 if len(path)>1:
                     print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                     logic.build_route(path[0],path[1])
                     logic.dto.set_position(path[1])
+
                 else:
                     logic.dto.set_position(path[0])
                     logic.build_route(path[0],path[0])
                     print("Client: Reached Goal!")
+                last_path = path
         except :
             logic.stop()
         # time.sleep(0.1)

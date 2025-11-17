@@ -26,6 +26,8 @@ class Logic:
         self.vMode = vMode
         self.dto = dto
         self.mk_control = control.Controller(self.dto)
+        self.moveStep=0
+        self.rotateStep=0
 
     
     def get_dir(self, pos, new_pos):
@@ -63,6 +65,7 @@ class Logic:
     
     def move_robot(self, turns, new_pos):
             if turns[0] > 0:
+                self.rotateStep+=1
                 if turns[1] == "right":
                     self.mk_control.stop()
                     print("Turn right: ",turns[0])
@@ -71,8 +74,9 @@ class Logic:
                     self.mk_control.stop()
                     print("Turn left: ",turns[0])
                     self.mk_control.turnLeft(self.vMode,turns[0])
-
+            self.moveStep+=1
             self.mk_control.forward(self.vMode)
+            print(f"@@@@ MOveSteps:{self.moveStep} ... RotateStep:{self.rotateStep}")
 
     def stop(self):
         self.mk_control.stop()       
