@@ -1,4 +1,5 @@
-from robot import mock_controller as mc
+from robot import mock_controller as control
+# from robot import controller as control
 from server.grid_dto import GridDto
 
 
@@ -24,7 +25,7 @@ class Logic:
         self.pos = pos
         self.vMode = vMode
         self.dto = dto
-        self.mk_control = mc.MockController(self.dto)
+        self.mk_control = control.MockController(self.dto)
 
     
     def get_dir(self, pos, new_pos):
