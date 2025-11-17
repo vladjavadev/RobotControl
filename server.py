@@ -15,8 +15,8 @@ import functools
 
 g_dt = GridDto()
 logic = Logic(g_dt,dir=(0,1))
-# ip="0.0.0.0"
-ip="localhost"
+ip="0.0.0.0"
+# ip="localhost"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
@@ -82,26 +82,32 @@ async def main():
 def moving_robot(logic: Logic):
     time.sleep(5.0)
     last_path = []
+    last_pos=logic.dto.get_position()
+    temp=(0,0)
     while True:
         try:
             time.sleep(0.05)
             path = logic.dto.get_path()
-            if logic.dto.get_position() == tuple(logic.dto.get_goal()):
-                print("Client: Reached Goal!")
-                logic.build_route(path[0],path[0])
-                break
+
 
             if path is not None and path!=last_path:
-                if len(path)>1:
+                if len(path)>=1:
                     print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
-                    logic.build_route(path[0],path[1])
-                    logic.dto.set_position(path[1])
+                    logic.build_route(last_pos,path[0])
+                    if len(path)>1:
+                        logic.dto.set_position(path[1])
+                        temp=path[1]
+                    else:
+                        logic.dto.set_position(path[0])
+                    last_pos=path[0]
+                    last_path = path
 
-                else:
-                    logic.dto.set_position(path[0])
-                    logic.build_route(path[0],path[0])
-                    print("Client: Reached Goal!")
-                last_path = path
+            if logic.dto.get_position() == tuple(logic.dto.get_goal()):
+                print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
+                logic.build_route(temp,path[0])
+                logic.stop()
+                print("Client: Reached Goal!")
+                break
         except :
             logic.stop()
         # time.sleep(0.1)
