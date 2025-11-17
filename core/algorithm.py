@@ -24,7 +24,7 @@ def run_algorithm(dto: GridDto):
     start_pos = tuple(dto.start)
     dto.set_position(start_pos)
     goal = tuple(dto.goal)
-    view_range = 5
+    view_range = 2
 
 
     new_map = dto.world
@@ -71,14 +71,14 @@ def run_algorithm(dto: GridDto):
     #     new_map.set_obstacle(obs)
     # Only proceed if we have a valid path
     if path:
-        
+        dto.set_path(path)
         while True:
             try:
                 
                 time.sleep(0.05)
                 start = time.time()
 
-                dto.set_path(path)
+                
                 # update the map
                 # print(path)
                 # drive gui
@@ -114,6 +114,8 @@ def run_algorithm(dto: GridDto):
                     end = time.time()
                     print(f"Время расчёта: {end - start:.6f} секунд")
                     dto._lock.release()
+                dto.set_path(path)
+                
             except TypeError as e:
                 print(e)
 

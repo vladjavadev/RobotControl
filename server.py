@@ -15,7 +15,8 @@ import functools
 
 g_dt = GridDto()
 logic = Logic(g_dt,dir=(0,1))
-ip="0.0.0.0"
+# ip="0.0.0.0"
+ip="localhost"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
