@@ -15,6 +15,7 @@ import functools
 
 g_dt = GridDto()
 logic = Logic(g_dt,dir=(0,1))
+ip="0.0.0.0"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
@@ -50,6 +51,7 @@ async def echo(dto:GridDto, websocket:ServerConnection):
     elif event["type"] == "init":
         dto.set_start(event["start"])
         dto.set_goal(event["goal"])
+        
 
         dto.set_dim(event["grid_dim"])
 
@@ -72,7 +74,7 @@ async def get_pos(dto: GridDto, websocket:ServerConnection):
 async def main():
     print("<!!!! Run SERVER !!!!>")
     bound_handler = functools.partial(echo, g_dt)
-    async with serve(bound_handler, "0.0.0.0", 8765) as server:
+    async with serve(bound_handler, ip, 8765) as server:
         await server.serve_forever()
 
 

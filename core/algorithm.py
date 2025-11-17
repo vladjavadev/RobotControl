@@ -21,7 +21,8 @@ def run_algorithm(dto: GridDto):
     x, row
     """
 
-    start = tuple(dto.start)
+    start_pos = tuple(dto.start)
+    dto.set_position(start_pos)
     goal = tuple(dto.goal)
     view_range = 5
 
@@ -41,15 +42,15 @@ def run_algorithm(dto: GridDto):
     
     old_map = new_map
 
-    new_position = start
-    last_position = start
+    new_position = start_pos
+    last_position = start_pos
 
     # new_observation = None
     # type = OBSTACLE
 
     # D* Lite (optimized)
     dstar = DStarLite(map=new_map,
-                      s_start=start,
+                      s_start=start_pos,
                       s_goal=goal)
 
     # SLAM to detect vertices
