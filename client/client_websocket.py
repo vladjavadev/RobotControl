@@ -13,6 +13,9 @@ import utils.connect_dto as con_dto
 loc = ldt.LocationDTO()
 dim_grid = ddt.DimDTO()
 con = con_dto.Connection()
+uri = "ws://localhost:8765"
+# uri = "ws://192.168.178.58:8765"
+# uri = "ws://192.168.0.45:8765"
 
 m_types = ["set-obs","init"]
 
@@ -35,7 +38,6 @@ async def init_grid(grid_dim:tuple[int,int],start:tuple[int,int],goal:tuple[int,
 
 async def send_message(type, message):
 
-    uri = "ws://localhost:8765"
 
     try:
         async with connect(uri) as websocket:
@@ -78,7 +80,6 @@ def get_connection(con_dto):
     asyncio.run(fetch_connection_status(con_dto))
 
 async def fetch_location(location):
-    uri = "ws://localhost:8765"
 
     try:
         async with connect(uri) as websocket:
@@ -112,7 +113,6 @@ async def fetch_location(location):
 
 
 async def fetch_connection_status(con_dto):
-    uri = "ws://localhost:8765"
 
     try:
         async with connect(uri) as websocket:

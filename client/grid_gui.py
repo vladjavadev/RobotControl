@@ -50,7 +50,7 @@ class Animation:
         self.observation = {"pos": None, "type": None}
         self.goal = goal
         self.viewing_range = viewing_range
-
+        self.traject = []
         pygame.init()
 
         # Set the 'width' and 'height' of the screen
@@ -103,7 +103,7 @@ class Animation:
     def set_start(self, start: (int, int)):
         self.start = start
 
-    def display_path(self, path=None):
+    def display_path(self, path=None,color=START):
         if path is not None:
             for step in path:
                 # draw a moving robot, based on current coordinates
@@ -111,7 +111,7 @@ class Animation:
                                round(step[0] * (self.height + self.margin) + self.height / 2) + self.margin]
 
                 # draw robot position as red circle
-                pygame.draw.circle(self.screen, START, step_center, round(self.width / 2) - 2)
+                pygame.draw.circle(self.screen, color, step_center, round(self.width / 2) - 2)
 
     def display_obs(self, observations=None):
         if observations is not None:
@@ -204,8 +204,9 @@ class Animation:
                                     self.height])
             path = cw.loc.get_path()
             self.current = cw.loc.get_pos()
+            self.traject.append(self.current)
             self.goal = cw.loc.get_goal()
-
+            self.display_path(path=self.traject,color=(255,255,0))
             self.display_path(path=path)
             # fill in the goal cell with green
             pygame.draw.rect(self.screen, GOAL, [(self.margin + self.width) * self.goal[1] + self.margin,
