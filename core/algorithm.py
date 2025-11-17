@@ -1,10 +1,10 @@
 
 from dstar.d_star_lite import DStarLite
 from dstar.grid import OccupancyGridMap, SLAM
-import server as srv
+import data as srv
 import robot.move_logic as lgc
 import time
-from server.grid_dto import GridDto 
+from data.grid_dto import GridDto 
 
 OBSTACLE = 255
 UNOCCUPIED = 0

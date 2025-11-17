@@ -1,6 +1,6 @@
-from robot import mock_controller as control
-# from robot import controller as control
-from server.grid_dto import GridDto
+# from robot import mock_controller as control
+from robot import controller as control
+from data.grid_dto import GridDto
 
 
 DIRECTIONS = [
@@ -25,7 +25,7 @@ class Logic:
         self.pos = pos
         self.vMode = vMode
         self.dto = dto
-        self.mk_control = control.MockController(self.dto)
+        self.mk_control = control.Controller(self.dto)
 
     
     def get_dir(self, pos, new_pos):
@@ -74,7 +74,8 @@ class Logic:
 
             self.mk_control.forward(self.vMode)
 
-            
+    def stop(self):
+        self.mk_control.stop()       
     def build_route(self,pos,new_pos):
         if pos == new_pos:
             print("<<<Destination reached")

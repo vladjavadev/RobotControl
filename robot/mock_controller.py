@@ -1,10 +1,10 @@
 from robot import kinematic as rk
 # from robot import motor_driver as rd
-from server.grid_dto import GridDto
+from data.grid_dto import GridDto
 import time
 
 
-class MockController:
+class Controller:
     speed_mode_max = 4
     speed_mode_min = 1
     unit = 0.5#time in seconds to accross grid cell

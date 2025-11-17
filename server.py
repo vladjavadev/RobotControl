@@ -4,7 +4,7 @@
 
 import asyncio
 from websockets.asyncio.server import serve, ServerConnection
-from server.grid_dto import GridDto
+from data.grid_dto import GridDto
 from robot.move_logic import Logic
 import core.algorithm as agm
 import json
@@ -80,21 +80,24 @@ def moving_robot(logic: Logic):
     time.sleep(5.0)
     
     while True:
-        path = logic.dto.get_path()
-        if logic.dto.get_position() == tuple(logic.dto.get_goal()):
-            print("Client: Reached Goal!")
-            logic.build_route(path[0],path[0])
-            break
-
-        if path is not None:
-            if len(path)>1:
-               print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
-               logic.build_route(path[0],path[1])
-               logic.dto.set_position(path[1])
-            else:
-                logic.dto.set_position(path[0])
-                logic.build_route(path[0],path[0])
+        try:
+            path = logic.dto.get_path()
+            if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print("Client: Reached Goal!")
+                logic.build_route(path[0],path[0])
+                break
+
+            if path is not None:
+                if len(path)>1:
+                    print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
+                    logic.build_route(path[0],path[1])
+                    logic.dto.set_position(path[1])
+                else:
+                    logic.dto.set_position(path[0])
+                    logic.build_route(path[0],path[0])
+                    print("Client: Reached Goal!")
+        except :
+            logic.stop()
         # time.sleep(0.1)
 class DoWork(threading.Thread):
     def __init__(self, shared, task_func, *args, **kwargs):
