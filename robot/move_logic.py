@@ -53,8 +53,8 @@ class Logic:
         start_idx = self.get_dir_ix(start_vec)
         target_idx = self.get_dir_ix(target_vec)
 
-        spinL = (target_idx - start_idx) % 8
-        spinR = (start_idx - target_idx) % 8
+        spinR = (target_idx - start_idx) % 8
+        spinL = (start_idx - target_idx) % 8
         turns = (spinR, "right") if spinR <= spinL else (spinL, "left")
 
         return turns
