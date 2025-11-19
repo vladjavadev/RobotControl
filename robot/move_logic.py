@@ -20,7 +20,7 @@ DIRECTIONS = [
 
 
 class Logic:
-    def __init__(self, dto:GridDto, pos=(0, 0), dir=(0,0), vMode = 3):
+    def __init__(self, dto:GridDto, pos=(0, 0), dir=(0,0), vMode = 1):
         self.dir = dir
         self.pos = pos
         self.vMode = vMode
