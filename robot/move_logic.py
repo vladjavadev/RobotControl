@@ -1,5 +1,5 @@
-from robot import mock_controller as control
-# from robot import controller as control
+# from robot import mock_controller as control
+from robot import controller as control
 from data.grid_dto import GridDto
 
 
@@ -20,7 +20,7 @@ DIRECTIONS = [
 
 
 class Logic:
-    def __init__(self, dto:GridDto, pos=(0, 0), dir=(0,0), vMode = 3):
+    def __init__(self, dto:GridDto, pos=(0, 0), dir=(0,0), vMode = 1):
         self.dir = dir
         self.pos = pos
         self.vMode = vMode
@@ -79,7 +79,8 @@ class Logic:
             print(f"@@@@ MOveSteps:{self.moveStep} ... RotateStep:{self.rotateStep}")
 
     def stop(self):
-        self.mk_control.stop()       
+        self.mk_control.stop()     
+
     def build_route(self,pos,new_pos):
         if pos == new_pos:
             print("<<<Destination reached")
@@ -88,7 +89,9 @@ class Logic:
         new_dir = self.get_dir(pos,new_pos)
         turns = self.turns_needed(self.dir,new_dir)
         self.move_robot(turns,new_pos)
+        self.dto.set_distance(self.mk_control.totalDistance)
         self.update_dir_pos(new_pos,new_dir)
+
 
 
     
