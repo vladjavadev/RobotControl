@@ -16,7 +16,9 @@ class GridDto:
         self.goal = goal
         self.viewing_range = viewing_range
         self.path = None
+        self.totalDistance = 0
         self._lock = Lock()
+        self._lock_dist = Lock()
 
 
         self.world = OccupancyGridMap(x_dim=x_dim,
@@ -27,7 +29,12 @@ class GridDto:
 
     def set_goal(self, goal):
         self.goal=tuple(goal[0],goal[1])
+    def set_distance(self, dist):
+        with self._lock_dist:
+            self.totalDistance = dist
 
+    def get_total_distance(self):
+        return self.totalDistance
 
     def set_dim(self, dim_tuple):
         self.x_dim=dim_tuple[0]
