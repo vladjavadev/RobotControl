@@ -99,7 +99,8 @@ async def fetch_location(location):
                         goal=tuple(event_pos["goal"])
                         pos = tuple(event_pos["current_pos"])
                         path = event_pos["path"]
-                        loc.update(pos,path,goal)
+                        distance = event_pos["distance"]
+                        loc.update(pos,path,goal,distance)
 
                 print(f"Ответ сервера: {response}")
             except asyncio.TimeoutError:

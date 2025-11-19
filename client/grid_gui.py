@@ -26,7 +26,7 @@ colors = {
 def check_loop(gui):
     while not gui.done:
         cw.get_pos(cw.loc)
-        time.sleep(0.5)
+        time.sleep(0.1)
 
 class Animation:
     def __init__(self,
@@ -39,7 +39,7 @@ class Animation:
                  start=(1, 1),
                  goal=(8, 8),
                  viewing_range=1):
-
+        pygame.init()
         self.width = width
         self.height = height
         self.margin = margin
@@ -51,6 +51,12 @@ class Animation:
         self.goal = goal
         self.viewing_range = viewing_range
         self.traject = []
+        self.totalDistance=0
+        pygame.font.SysFont('Comic Sans MS', 36)
+        self.font = pygame.font.Font(None, 32)
+
+
+
         pygame.init()
 
         # Set the 'width' and 'height' of the screen
@@ -206,6 +212,8 @@ class Animation:
             self.current = cw.loc.get_pos()
             self.traject.append(self.current)
             self.goal = cw.loc.get_goal()
+            self.totalDistance = cw.loc.get_total_distance()
+
             self.display_path(path=self.traject,color=(255,255,0))
             self.display_path(path=path)
             # fill in the goal cell with green
@@ -230,6 +238,14 @@ class Animation:
                             robot_center[1] - self.viewing_range * (self.width + self.margin),
                             2 * self.viewing_range * (self.height + self.margin),
                             2 * self.viewing_range * (self.width + self.margin)], 2)
+            
+            text_distance = self.font.render(f"Total Distance: {self.totalDistance} mm", True, (255, 0, 0))
+            text_rect = text_distance.get_rect()
+            padding = 10
+            text_rect.topright = (self.width*self.y_dim - padding, padding)
+            self.screen.blit(text_distance, text_rect)
+
+
 
             # set game tick
             self.clock.tick(20)

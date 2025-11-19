@@ -12,4 +12,4 @@ if __name__ == "__main__":
         main_gui = grid_gui.Animation(x_dim=dim[0], y_dim=dim[1])
         main_gui.run_game()
     except KeyboardInterrupt:
-        print("\n\nПрограмма прервана пользователем")
+        print("\n\nПрограмма прервана пользователем") 
