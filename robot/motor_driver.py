@@ -21,7 +21,7 @@ vModeMax = 5
 
 def get_dc(vMode):
     if vMode>vModeMin and vMode<=vModeMax:
-        dc = duty_levels[vMode-1]/100
+        dc = duty_levels[vMode]/100
         return dc
     else:
         return duty_levels[0]/100
