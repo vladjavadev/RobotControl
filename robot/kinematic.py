@@ -3,6 +3,7 @@ import math
 
 
 rps = [1.1,1.55,1.6,1.62,1.7]
+rps = [1.1,1.55,1.6,1.62,1.7]
 wheelRadius = 30 #mm
 speeds = []
 LwheelBase = 150 #mm
