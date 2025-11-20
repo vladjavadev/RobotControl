@@ -8,7 +8,7 @@ import math
 class Controller:
     speed_mode_max = 4
     speed_mode_min = 1
-    unit = 500#mm
+    unit = 200#mm
     ix=0
 
     def __init__(self, dto:GridDto):
