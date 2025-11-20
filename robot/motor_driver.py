@@ -15,7 +15,7 @@ pin_BmotR = "P8_19" # GPIO 51 PWMB rechter Motor
 
 # PWM Parameter
 FREQ = 250000
-duty_levels = [30, 40, 60, 80, 90]
+duty_levels = [30, 45, 60, 75, 90]
 vModeMin = 1
 vModeMax = 5
 
