@@ -5,15 +5,11 @@ import math
 
 rps = [0.6,0.67,1.6,1.62,1.7]
 wheelRadius = 30 #mm
-speeds = []
+speeds =[2*3.14*wheelRadius*i for i in rps ]
 LwheelBase = 150 #mm
 # kdc = 0.8
 
 
-
-def init():
-    global speeds
-    speeds =[2*3.14*wheelRadius*i for i in rps ]
 
 def get_deltaT(vL, vR, deg):
     omega = (vR - vL)/LwheelBase

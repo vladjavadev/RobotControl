@@ -14,7 +14,6 @@ class Controller:
     def __init__(self, dto:GridDto):
         self.totalDistance = 0
         self.dto=dto
-        rk.init()
 
 
     def clamp_speed(self, value, default=0):
@@ -34,6 +33,8 @@ class Controller:
         print(f"<<<< LEFT New POS(x:{x1},y:{y1})")
         print(f"<<<< Distance {dist} mm")
         print("Turning left")
+        print ("SPEED MODE:", cM)
+
         time.sleep(turnTime)
         self.totalDistance+=dist
         self.dto._lock_dist.release()
@@ -52,6 +53,7 @@ class Controller:
         print(f"<<<< RIGHT New POS(x:{x1},y:{y1})")
         print(f"<<<< Distance {dist} mm")
         print("Turning right")
+        print ("SPEED MODE:", cM)
         time.sleep(turnTime)
         self.totalDistance+=dist
         self.dto._lock_dist.release()
@@ -63,6 +65,8 @@ class Controller:
 
         cM = self.clamp_speed(speed_mode)
         print("!!!Move forward")
+        print ("SPEED MODE:", cM)
+
         timeSleep = self.unit/rk.speeds[cM]
         time.sleep(timeSleep)
         self.totalDistance+=self.unit
@@ -72,6 +76,9 @@ class Controller:
 
     def reverse(self, speed_mode=1):
         self.dto._lock_dist.acquire()
+        print("!!!Move reverse")
+
+        print ("SPEED MODE:", cM)
 
         cM = self.clamp_speed(speed_mode)
         timeSleep = self.unit/rk.speeds[cM]
