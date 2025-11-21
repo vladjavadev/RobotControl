@@ -14,7 +14,6 @@ class Controller:
     def __init__(self, dto:GridDto):
         self.totalDistance = 0
         self.dto=dto
-        rk.init()
         rd.init()
 
 
