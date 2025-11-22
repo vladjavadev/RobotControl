@@ -12,8 +12,8 @@ import threading
 import time
 import functools
 
-
-mode=1
+#change value for 2 mode 
+mode=3
 g_dt = GridDto()
 logic = Logic(g_dt,dir=(0,1),vMode=mode)
 ip="0.0.0.0"
@@ -51,13 +51,13 @@ async def echo(dto:GridDto, websocket:ServerConnection):
             "status":"connected"
         }
         await websocket.send(json.dumps(event_connected))
+    elif event["type"] == "init-dim":
+        dto.set_dim(event["grid_dim"])
 
-    elif event["type"] == "init":
+    elif event["type"] == "init-points":
         dto.set_start(event["start"])
         dto.set_goal(event["goal"])
-        
-
-        dto.set_dim(event["grid_dim"])
+    
 
         m_threads = [DoWork(shared=g_dt, task_func=agm.run_algorithm, name='a'), 
         DoWork(shared=logic, task_func=moving_robot, name='b')]
