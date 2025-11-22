@@ -142,7 +142,7 @@ class Animation:
                 if event.type == pygame.QUIT:  # if user clicked close
                     print("quit")
                     self.done = True  # flag that we are done so we can exit loop
-
+                    raise KeyboardInterrupt("GUI closed by user")
                 elif (event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE) or self.cont:
                     # space bar pressed. call next action
                     if path:

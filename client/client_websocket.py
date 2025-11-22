@@ -17,7 +17,7 @@ uri = "ws://localhost:8765"
 # uri = "ws://192.168.178.58:8765"
 # uri = "ws://192.168.0.45:8765"
 
-m_types = ["set-obs","init"]
+m_types = ["set-obs","init-dim","init-points"]
 
 
 async def set_no_obs(grid_cell):
@@ -28,13 +28,14 @@ async def set_obs(grid_cell):
     d_Obs = {"obs": [grid_cell]}
     await send_message(m_types[0], d_Obs)
 
-async def init_grid(grid_dim:tuple[int,int],start:tuple[int,int],goal:tuple[int,int]):
-    d_init = {"grid_dim":grid_dim,
-              "start":start,
-              "goal":goal
-              }
+async def init_grid_message(grid_dim:tuple[int,int]):
+    d_init = {"grid_dim":grid_dim}
     await send_message(m_types[1], d_init)
 
+async def init_points_message(start:tuple[int,int],goal:tuple[int,int]):
+    d_init = {"start":start,
+              "goal":goal}
+    await send_message(m_types[2], d_init)
 
 async def send_message(type, message):
 
@@ -66,8 +67,11 @@ def send_obs_coord(grid_cell):
     asyncio.run(set_obs(grid_cell))
 
 
-def send_dim_grid(dim_grid,start,goal):
-    asyncio.run(init_grid(dim_grid,start,goal))
+def send_points(start,goal):
+    asyncio.run(init_points_message(start,goal))
+
+def send_dim_grid(dim_grid):
+    asyncio.run(init_grid_message(dim_grid))
 
 
 def send_no_obs_coord(grid_cell):
