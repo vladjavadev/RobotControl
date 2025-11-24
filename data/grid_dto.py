@@ -2,28 +2,27 @@ from dstar.grid import OccupancyGridMap
 from threading import Lock
 class GridDto:
     def __init__(self,
-                 x_dim=10,
-                 y_dim=10,
-                 start=(1, 1),
-                 goal=(8, 8),
                  viewing_range=3):
         
-        self.x_dim = x_dim
-        self.y_dim = y_dim
-        self.start = start
-        self.current = start
+        self.x_dim = None
+        self.y_dim = None
+        self.start = None
+        self.current = self.start
         self.observation = {"pos": None, "type": None}
-        self.goal = goal
+        self.goal = None
         self.viewing_range = viewing_range
         self.path = None
         self.totalDistance = 0
         self._lock = Lock()
         self._lock_dist = Lock()
+        self.world = None
 
 
-        self.world = OccupancyGridMap(x_dim=x_dim,
-                                      y_dim=y_dim,
+    def build_world(self):
+        self.world = OccupancyGridMap(x_dim=self.x_dim,
+                                      y_dim=self.y_dim,
                                       exploration_setting='8N')
+
     def set_start(self, start):
         self.start=tuple(start[0],start[1])
 

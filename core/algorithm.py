@@ -20,7 +20,11 @@ def run_algorithm(dto: GridDto):
     V (x=2, y=0)
     x, row
     """
+    while dto.x_dim is None or dto.y_dim is None:
+        print("Waiting for grid dimensions...")
+        time.sleep(0.2)
 
+    dto.build_world()
     start_pos = tuple(dto.start)
     dto.set_position(start_pos)
     goal = tuple(dto.goal)

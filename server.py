@@ -15,6 +15,7 @@ import functools
 #change value for 2 mode 
 mode=3
 g_dt = GridDto()
+
 logic = Logic(g_dt,dir=(0,1),vMode=mode)
 # ip="0.0.0.0"
 ip="localhost"
