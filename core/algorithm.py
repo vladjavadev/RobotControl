@@ -28,7 +28,7 @@ def run_algorithm(dto: GridDto):
     start_pos = tuple(dto.start)
     dto.set_position(start_pos)
     goal = tuple(dto.goal)
-    view_range = 2
+    view_range = 20
 
 
     new_map = dto.world

@@ -79,7 +79,37 @@ class Logic:
             print(f"@@@@ MOveSteps:{self.moveStep} ... RotateStep:{self.rotateStep}")
 
     def stop(self):
-        self.mk_control.stop()     
+        self.mk_control.stop()  
+
+    def predict_time_distance(self, path):
+        total_time = 0
+        total_distance = 0
+        current_dir = self.dir
+        current_pos = self.pos
+        speed = self.mk_control.get_speed(self.vMode)
+        if not path:
+            return (0, 0)
+        for next_pos in path[1:]:
+            next_dir = self.get_dir(current_pos, next_pos)
+            turns = self.turns_needed(current_dir, next_dir)
+
+            # Estimate time for turns
+            if turns[0] > 0:
+                turn_time = self.mk_control.get_turn_deltaT(0, speed, 45 * turns[0])
+                turn_dist = self.mk_control.copmute_arc_distance(0, speed, turn_time)
+                total_time += turn_time
+                total_distance += turn_dist
+
+            # Estimate time for forward movement
+            forward_time = self.mk_control.calc_fwd_time(self.vMode)
+            total_time += forward_time
+            total_distance += self.mk_control.unit
+
+            # Update current position and direction
+            current_pos = next_pos
+            current_dir = next_dir
+
+        return (total_time, total_distance)
 
     def build_route(self,pos,new_pos):
         if pos == new_pos:

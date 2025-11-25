@@ -17,8 +17,8 @@ mode=3
 g_dt = GridDto()
 
 logic = Logic(g_dt,dir=(0,1),vMode=mode)
-ip="0.0.0.0"
-# ip="localhost"
+# ip="0.0.0.0"
+ip="localhost"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
@@ -37,12 +37,15 @@ async def echo(dto:GridDto, websocket:ServerConnection):
         goal= dto.get_goal()
         path = dto.get_path()
         totalDistance = dto.get_total_distance()
+        pred_time, pred_distance = dto.get_predict_time_distance()
         event_location = {
             "type":"location",
             "current_pos":pos,
             "goal":goal,
             "path":path,
-            "distance":totalDistance
+            "distance":totalDistance,
+            "pred_time": pred_time,
+            "pred_distance": pred_distance
         }
         await websocket.send(json.dumps(event_location))
 
@@ -99,7 +102,9 @@ def moving_robot(logic: Logic):
                 if len(path)>=1:
                     print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                     next_pos = path[1]
+                    pred_time, pred_dist = logic.predict_time_distance(path[1:])
                     logic.build_route(last_pos,next_pos)
+                    logic.dto.set_predict_time_distance(pred_time, pred_dist)
                     logic.dto.set_position(next_pos)
                     last_pos=path[1]
                     last_path = path
@@ -107,11 +112,15 @@ def moving_robot(logic: Logic):
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                 logic.build_route(last_pos,path[1])
+                pred_time, pred_dist = logic.predict_time_distance(None)
+                logic.dto.set_predict_time_distance(pred_time, pred_dist)
+
                 logic.dto.set_position(path[1])
                 logic.stop()
                 print("Client: Reached Goal!")
                 break
-        except :
+        except Exception as e:
+            print("MOVING ROBOT EXCEPTION:", e)
             logic.stop()
         # time.sleep(0.1)
 class DoWork(threading.Thread):
