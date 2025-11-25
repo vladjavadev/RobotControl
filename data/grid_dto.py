@@ -13,10 +13,18 @@ class GridDto:
         self.viewing_range = viewing_range
         self.path = None
         self.totalDistance = 0
+        self.pred_time = 0
+        self.pred_distance = 0
         self._lock = Lock()
         self._lock_dist = Lock()
         self.world = None
 
+    def set_predict_time_distance(self, time, distance):
+        self.pred_time = time
+        self.pred_distance = distance
+
+    def get_predict_time_distance(self):
+        return (self.pred_time, self.pred_distance)
 
     def build_world(self):
         self.world = OccupancyGridMap(x_dim=self.x_dim,
