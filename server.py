@@ -18,8 +18,8 @@ g_dt = GridDto()
 
 logic = None
 
-# ip="0.0.0.0"
-ip="localhost"
+ip="0.0.0.0"
+# ip="localhost"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
