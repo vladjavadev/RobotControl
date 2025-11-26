@@ -15,6 +15,7 @@ class Controller:
         self.totalDistance = 0
         self.totalTime = 0
         self.dto=dto
+        self.unit = self.dto.get_unit()
 
     def get_speed(self, ix: int):
         return rk.speeds[ix-1]
