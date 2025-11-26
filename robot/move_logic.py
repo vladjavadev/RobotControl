@@ -1,5 +1,5 @@
-# from robot import mock_controller as control
-from robot import controller as control
+from robot import mock_controller as control
+# from robot import controller as control
 from data.grid_dto import GridDto
 
 
@@ -48,13 +48,13 @@ class Logic:
                 return i
             
     def turns_needed(self, start_vec, target_vec):
-        if target_vec==start_vec:
+        if target_vec==start_vec or target_vec==(0,0) or start_vec==(0,0):
             return (0,"straight")
         start_idx = self.get_dir_ix(start_vec)
         target_idx = self.get_dir_ix(target_vec)
 
-        spinR = (target_idx - start_idx) % 8
-        spinL = (start_idx - target_idx) % 8
+        spinL = (target_idx - start_idx) % 8
+        spinR = (start_idx - target_idx) % 8
         turns = (spinR, "right") if spinR <= spinL else (spinL, "left")
 
         return turns

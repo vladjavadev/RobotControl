@@ -14,6 +14,7 @@ class Controller:
         self.totalDistance = 0
         self.totalTime = 0
         self.dto=dto
+        self.unit = dto.get_unit()
         rd.init()
 
     def get_speed(self, ix: int):

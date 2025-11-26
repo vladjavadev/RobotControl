@@ -16,7 +16,8 @@ import functools
 mode=3
 g_dt = GridDto()
 
-logic = Logic(g_dt,dir=(0,1),vMode=mode)
+logic = None
+
 # ip="0.0.0.0"
 ip="localhost"
 
@@ -56,7 +57,11 @@ async def echo(dto:GridDto, websocket:ServerConnection):
         }
         await websocket.send(json.dumps(event_connected))
     elif event["type"] == "init-dim":
+        global logic
+
         dto.set_dim(event["grid_dim"])
+        dto.set_unit(event["cell_unit"])
+        logic = Logic(dto,dir=(0,1),vMode=mode)
 
     elif event["type"] == "init-points":
         dto.set_start(event["start"])

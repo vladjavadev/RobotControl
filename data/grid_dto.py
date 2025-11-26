@@ -4,6 +4,7 @@ class GridDto:
     def __init__(self,
                  viewing_range=3):
         
+        self.cell_unit = 200 #mm
         self.x_dim = None
         self.y_dim = None
         self.start = None
@@ -42,6 +43,12 @@ class GridDto:
 
     def get_total_distance(self):
         return self.totalDistance
+
+    def set_unit(self, cell_unit):
+        self.cell_unit = cell_unit
+        
+    def get_unit(self):
+        return self.cell_unit
 
     def set_dim(self, dim_tuple):
         self.x_dim=dim_tuple[0]
