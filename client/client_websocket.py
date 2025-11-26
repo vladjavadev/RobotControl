@@ -28,8 +28,10 @@ async def set_obs(grid_cell):
     d_Obs = {"obs": [grid_cell]}
     await send_message(m_types[0], d_Obs)
 
-async def init_grid_message(grid_dim:tuple[int,int]):
-    d_init = {"grid_dim":grid_dim}
+async def init_grid_message(grid_dim:tuple[int,int], unit:int):
+    d_init = {"grid_dim":grid_dim, 
+              "cell_unit":unit}
+    
     await send_message(m_types[1], d_init)
 
 async def init_points_message(start:tuple[int,int],goal:tuple[int,int]):
@@ -70,8 +72,8 @@ def send_obs_coord(grid_cell):
 def send_points(start,goal):
     asyncio.run(init_points_message(start,goal))
 
-def send_dim_grid(dim_grid):
-    asyncio.run(init_grid_message(dim_grid))
+def send_dim_grid(dim_grid, cell_unit):
+    asyncio.run(init_grid_message(dim_grid, cell_unit))
 
 
 def send_no_obs_coord(grid_cell):
@@ -104,7 +106,9 @@ async def fetch_location(location):
                         pos = tuple(event_pos["current_pos"])
                         path = event_pos["path"]
                         distance = event_pos["distance"]
-                        loc.update(pos,path,goal,distance)
+                        pred_time = event_pos["pred_time"]
+                        pred_distance = event_pos["pred_distance"]
+                        loc.update(pos,path,goal,distance,pred_time,pred_distance)
 
                 print(f"Ответ сервера: {response}")
             except asyncio.TimeoutError:

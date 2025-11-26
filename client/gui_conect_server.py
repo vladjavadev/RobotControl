@@ -29,6 +29,7 @@ class GUI_ConnectServer:
                  height=400):
         self.width = width
         self.height = height
+        self.cell_unit = None
         self.x_dim = None
         self.y_dim = None
         self.text=cw.con.get_status()
@@ -40,6 +41,7 @@ class GUI_ConnectServer:
         self.screen = pygame.display.set_mode(window_size)
         self.input_dim_x = InputField(80,80,80,80)
         self.input_dim_y  = InputField(220,80,80,80)
+        self.input_unit = InputField(150,220,80,40)
         self.ok_btn = InputField(10, win_h - 50, 60, 40)
         self.ok_btn.text = "OK"
 
@@ -66,6 +68,7 @@ class GUI_ConnectServer:
     def input_dim(self):
         in_x = self.input_dim_x
         in_y = self.input_dim_y
+        in_unit = self.input_unit
         ok_btn = self.ok_btn
         clr_btn = self.clear_btn
         
@@ -84,53 +87,72 @@ class GUI_ConnectServer:
                     if in_x.field.collidepoint(m_pos):
                         in_x.active = True
                         in_y.active = False
+                        in_unit.active = False
                     elif in_y.field.collidepoint(m_pos):
                         in_y.active = True
                         in_x.active = False
+                        in_unit.active = False
+                    elif in_unit.field.collidepoint(m_pos):
+                        in_unit.active = True
+                        in_x.active = False
+                        in_y.active = False
                     elif ok_btn.field.collidepoint(m_pos):
                         print("Ok Button clicked!")
                         if in_x.text.isdigit() and in_y.text.isdigit():
                             self.x_dim = int(in_x.text)
                             self.y_dim = int(in_y.text)
+                            self.cell_unit = int(in_unit.text)
+
                             print(f"Grid Dimension: {self.x_dim}, Goal: {self.y_dim}")
                             cw.dim_grid.x_dim=self.x_dim
                             cw.dim_grid.y_dim=self.y_dim
                             
-                            cw.send_dim_grid((self.x_dim, self.y_dim))
+                            cw.send_dim_grid((self.x_dim, self.y_dim), self.cell_unit)
                             self.running = False
                             return  # Выходим из метода
                     elif clr_btn.field.collidepoint(m_pos):
                         print("Clear Button clicked!")
                         in_x.text = ''
                         in_y.text = ''
+                        in_unit.text = ''
                     else:
                         in_x.active = False
                         in_y.active = False
                     
                     in_x.color = in_x.clr_edit if in_x.active else in_x.clr_lock
                     in_y.color = in_y.clr_edit if in_y.active else in_y.clr_lock
+                    in_unit.color = in_unit.clr_edit if in_unit.active else in_unit.clr_lock
                     
                 elif event.type == pygame.KEYDOWN:
                     if in_x.active:
                         self.wr_text(in_x, event)
                     elif in_y.active:
                         self.wr_text(in_y, event)
+                    elif in_unit.active:
+                        self.wr_text(in_unit, event)
 
             self.screen.fill((255, 255, 255))
             
             # Рисуем поля ввода
             pygame.draw.rect(self.screen, in_x.color, in_x.field)
             pygame.draw.rect(self.screen, in_y.color, in_y.field)
+            pygame.draw.rect(self.screen, in_unit.color, in_unit.field)
             
             text_inputX = self.font.render(in_x.text, True, (0, 0, 0))
             text_inputY = self.font.render(in_y.text, True, (0, 0, 0))
+            text_unit = self.font.render(in_unit.text, True, (0, 0, 0))
+            
             self.screen.blit(text_inputX, (in_x.x, in_x.y + 20))
             self.screen.blit(text_inputY, (in_y.x, in_y.y + 20))
+            self.screen.blit(text_unit, (in_unit.x, in_unit.y + 5))
 
             label_X = self.font.render("Dim X", True, (0, 0, 0))
             label_Y = self.font.render("Dim Y", True, (0, 0, 0))
+            label_unit = self.font.render("Unit", True, (0, 0, 0))
+
             self.screen.blit(label_X, (in_x.x, in_x.y-50))
-            self.screen.blit(label_Y, (in_y.x, in_y.y-50))
+            self.screen.blit(label_Y, (in_y.x, in_y.y-50)) 
+            self.screen.blit(label_unit, (in_unit.x, in_unit.y-50))
             # Рисуем кнопки
             okBtn_is_hovered = ok_btn.field.collidepoint(m_pos)
             clearBtn_is_hovered = clr_btn.field.collidepoint(m_pos)

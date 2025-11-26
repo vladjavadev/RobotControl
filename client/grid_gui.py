@@ -52,6 +52,8 @@ class Animation:
         self.viewing_range = viewing_range
         self.traject = []
         self.totalDistance=0
+        self.pred_time=0
+        self.pred_distance=0
         pygame.font.SysFont('Comic Sans MS', 36)
         self.font = pygame.font.Font(None, 32)
 
@@ -213,6 +215,8 @@ class Animation:
             self.traject.append(self.current)
             self.goal = cw.loc.get_goal()
             self.totalDistance = cw.loc.get_total_distance()
+            self.pred_distance = cw.loc.get_pred_distance()
+            self.pred_time = cw.loc.get_pred_time()
 
             self.display_path(path=self.traject,color=(255,255,0))
             self.display_path(path=path)
@@ -244,6 +248,20 @@ class Animation:
             padding = 10
             text_rect.topright = (self.width*self.y_dim - padding, padding)
             self.screen.blit(text_distance, text_rect)
+
+            text_pred_distance = self.font.render(f"Predicted Distance: {self.pred_distance} mm", True, (255, 0, 0))
+            text_pred_rect = text_pred_distance.get_rect()
+            padding = 40
+            text_pred_rect.topright = (self.width*self.y_dim - padding, padding)
+            self.screen.blit(text_pred_distance, text_pred_rect)
+
+            
+            text_pred_time = self.font.render(f"Predicted Time: {self.pred_time} seconds", True, (255, 0, 0))
+            text_pred_time_rect = text_pred_time.get_rect()
+            padding = 80
+            text_pred_time_rect.topright = (self.width*self.y_dim - padding, padding)
+            self.screen.blit(text_pred_time, text_pred_time_rect)
+
 
 
 
