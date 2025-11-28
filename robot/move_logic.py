@@ -111,7 +111,8 @@ class Logic:
 
         return (total_time, total_distance)
 
-    def build_route(self,pos,new_pos):
+    def build_route(self,new_pos):
+        pos = self.dto.get_position()
         if pos == new_pos:
             print("<<<Destination reached")
             self.mk_control.stop()
