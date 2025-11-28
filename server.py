@@ -97,30 +97,42 @@ def moving_robot(logic: Logic):
     last_pos=logic.dto.get_position()
     next_pos = None
     temp=(0,0)
+    fullTime = []
+    builTime = []
+    pathTime = []
+    predTime = []
     while True:
         try:
             time.sleep(0.05)
+            start_time = time.time()
+            full_time = time.time()
             path = logic.dto.get_path()
 
 
             if path is not None and path!=last_path:
                 if len(path)>=1:
+                    print("Path TIme:", time.time()-start_time)
+                    pathTime.append(time.time()-start_time)
+                    
                     print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                     next_pos = path[1]
-                    pred_time, pred_dist = logic.predict_time_distance(path[1:])
+                    start_time = time.time()
                     logic.build_route(last_pos,next_pos)
+                    builTime.append(time.time()-start_time)
+                    start_time = time.time()
+                    pred_time, pred_dist = logic.predict_time_distance(path[1:])
+
                     logic.dto.set_predict_time_distance(pred_time, pred_dist)
                     logic.dto.set_position(next_pos)
                     last_pos=path[1]
                     last_path = path
+                    print("Client: Moving to next pos:", next_pos)
+                    print("Build Route TIme:",time.time()-start_time)
+                    predTime.append(time.time()-start_time)  
+                    fullTime.append(time.time()-full_time)
 
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
-                logic.build_route(last_pos,path[1])
-                pred_time, pred_dist = logic.predict_time_distance(None)
-                logic.dto.set_predict_time_distance(pred_time, pred_dist)
-
-                logic.dto.set_position(path[1])
                 logic.stop()
                 print("Client: Reached Goal!")
                 break
@@ -128,6 +140,10 @@ def moving_robot(logic: Logic):
             print("MOVING ROBOT EXCEPTION:", e)
             logic.stop()
         # time.sleep(0.1)
+    print("Path Finding Times:", pathTime)
+    print("Prediction Times:", predTime)
+    print("Build Route Times:", builTime)
+    print("Full Loop Times:", fullTime)
 class DoWork(threading.Thread):
     def __init__(self, shared, task_func, *args, **kwargs):
         super(DoWork, self).__init__(*args, **kwargs)
