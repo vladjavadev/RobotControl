@@ -21,8 +21,8 @@ logic = None
 route_times = []
 pred_times = []
 
-# ip="0.0.0.0"
-ip="localhost"
+ip="0.0.0.0"
+# ip="localhost"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
@@ -157,7 +157,7 @@ def move_process(p_obs: PathObservation, logic: Logic, route_times: list[int]):
             build_route_time_start = time.time()
             p_obs.is_updated = False
             counter = 0
-        elif counter ==4:
+        elif counter ==5:
             print("No path update, stop robot ", time.time()-update_time_start)
             update_time_start = time.time()
             logic.stop()
@@ -165,7 +165,7 @@ def move_process(p_obs: PathObservation, logic: Logic, route_times: list[int]):
             logic.stop()
             break
 
-        counter  = counter%4+1
+        counter  = counter%5+1
 
 
 def run_server(dto):
