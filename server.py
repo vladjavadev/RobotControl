@@ -18,6 +18,8 @@ mode=3
 g_dt = GridDto()
 
 logic = None
+route_times = []
+pred_times = []
 
 # ip="0.0.0.0"
 ip="localhost"
@@ -95,41 +97,38 @@ async def main():
 def moving_robot(logic: Logic):
     time.sleep(5.0)
     last_path = []
-    last_pos=logic.dto.get_position()
     next_pos = None
-    temp=(0,0)
-    fullTime = []
-    builTime = []
-    pathTime = []
-    predTime = []
+
     p_obs = PathObservation() 
-    threading.Thread(target=move_process, args=(p_obs, logic)).start()
+    threading.Thread(target=move_process, args=(p_obs, logic,route_times)).start()
+    start_time = time.time()
     while True:
         try:
             time.sleep(0.05)
-            start_time = time.time()
-            full_time = time.time()
             path = logic.dto.get_path()
-
             if path is not None and path!=last_path:
                 if len(path)>1:
                     if not p_obs.is_updated:    
                         next_pos = path[1]
                         p_obs.update(next_pos)
+                        ptime, pdistance = logic.predict_time_distance(path)
+                        pred_times.append(ptime)
+                        logic.dto.set_predict_time_distance(ptime,pdistance)
 
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                 p_obs.is_done = True
                 print("Client: Reached Goal!")
+                print("Total route times: ", route_times)
+                print("Total route time: ", sum(route_times))
+                print("Total predict times: ", pred_times)
                 break
         except Exception as e:
             print("MOVING ROBOT EXCEPTION:", e)
+            p_obs.is_done
             logic.stop()
-        # time.sleep(0.1)
-    print("Path Finding Times:", pathTime)
-    print("Prediction Times:", predTime)
-    print("Build Route Times:", builTime)
-    print("Full Loop Times:", fullTime)
+
+
 class DoWork(threading.Thread):
     def __init__(self, shared, task_func, *args, **kwargs):
         super(DoWork, self).__init__(*args, **kwargs)
@@ -143,19 +142,24 @@ class DoWork(threading.Thread):
         print(threading.current_thread(), 'done')
 
 
-def move_process(p_obs: PathObservation, logic: Logic):
+def move_process(p_obs: PathObservation, logic: Logic, route_times: list[int]):
     counter = 0
-    start = time.time()
+    update_time_start = time.time()
+    build_route_time_start = time.time()
+
     while True:
 
         time.sleep(0.05)
         if p_obs.is_updated:
             logic.build_route(p_obs.next_pos)
             logic.dto.set_position(p_obs.next_pos)
+            route_times.append(time.time()-build_route_time_start)
+            build_route_time_start = time.time()
             p_obs.is_updated = False
+            counter = 0
         elif counter ==4:
-            print("No path update, stop robot ", time.time()-start)
-            start = time.time()
+            print("No path update, stop robot ", time.time()-update_time_start)
+            update_time_start = time.time()
             logic.stop()
         elif p_obs.is_done:
             logic.stop()
