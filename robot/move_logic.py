@@ -1,5 +1,5 @@
-from robot import mock_controller as control
-# from robot import controller as control
+# from robot import mock_controller as control
+from robot import controller as control
 from data.grid_dto import GridDto
 
 
@@ -114,8 +114,6 @@ class Logic:
     def build_route(self,new_pos):
         pos = self.dto.get_position()
         if pos == new_pos:
-            print("<<<Destination reached")
-            self.mk_control.stop()
             return
         new_dir = self.get_dir(pos,new_pos)
         turns = self.turns_needed(self.dir,new_dir)

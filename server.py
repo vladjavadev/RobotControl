@@ -99,6 +99,7 @@ def moving_robot(logic: Logic):
     time.sleep(5.0)
     last_path = []
     next_pos = None
+    _lock = threading.Lock()
 
     p_obs = PathObservation() 
     threading.Thread(target=move_process, args=(p_obs, logic,route_times)).start()
@@ -111,13 +112,15 @@ def moving_robot(logic: Logic):
             path_build_time = time.time() - spbt
             if path is not None and path!=last_path:
                 if len(path)>1:
-                    if not p_obs.is_updated:    
+                    if not p_obs.is_updated:   
+                        _lock.acquire()
                         next_pos = path[1]
                         p_obs.update(next_pos)
                         ptime, pdistance = logic.predict_time_distance(path)
                         pred_times.append(ptime)
                         path_build_time_list.append(path_build_time)
                         logic.dto.set_predict_time_distance(ptime,pdistance)
+                        _lock.release()
 
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
