@@ -17,7 +17,7 @@ class InputField:
 
 class GridGUI:
     def __init__(self, title="Init Dim GRID",
-                 width=50, height=50, margin=2,
+                 width=10, height=10, margin=2,
                  x_dim=10, y_dim=10):
         self.width = width
         self.height = height
@@ -44,7 +44,7 @@ class GridGUI:
         self.clear_btn = InputField(80, win_h - 50, 120, 40)
         self.clear_btn.text = "CLEAR"
 
-        self.screen = pygame.display.set_mode(window_size)
+        self.screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
         pygame.display.set_caption(title)
         pygame.font.SysFont('Comic Sans MS', 36)
         self.font = pygame.font.Font(None, 48)

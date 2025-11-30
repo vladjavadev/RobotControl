@@ -14,7 +14,7 @@ if __name__ == "__main__":
         # cw.send_dim_grid(dim)
         # cw.send_points((0,0),(9,9))
         time.sleep(0.2)  # Небольшая пауза перед запуском основной GUI
-        main_gui = grid_gui.Animation(x_dim=dim[0], y_dim=dim[1])
+        main_gui = grid_gui.Animation(x_dim=dim[0], y_dim=dim[1],cell_size=100)
         main_gui.run_game()
     except KeyboardInterrupt:
         print("\n\nПрограмма прервана пользователем") 

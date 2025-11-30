@@ -13,6 +13,7 @@ import utils.connect_dto as con_dto
 loc = ldt.LocationDTO()
 dim_grid = ddt.DimDTO()
 con = con_dto.Connection()
+# uri = "ws://192.168.7.2:8765"
 uri = "ws://localhost:8765"
 # uri = "ws://192.168.178.58:8765"
 # uri = "ws://192.168.0.45:8765"

@@ -1,9 +1,10 @@
 import pygame
 import time
-from typing import List
+from typing import List, Tuple
 import numpy as np
 from client import client_websocket as cw
 import threading
+import math
 
 
 # Define some colors
@@ -24,20 +25,33 @@ colors = {
 }
 
 def check_loop(gui):
+    time.sleep(1.0)
+    obs_attr = [
+                (400, 200,10,10),(200, 200, 20, 10),
+                (200,200,0,35),(200,200,10,35),
+                (200,150,0,50),(150,100,0,45),
+                (200,200,5,75),(200,400,10,65),
+                (200,200,10,80),(400,200,0,80),
+                (200,200,20,75),(400,200,30,65),
+                ]
+    gui.init_obstacles(obs_attr,gui.cell_size)
+
     while not gui.done:
         cw.get_pos(cw.loc)
-        time.sleep(0.1)
+        time.sleep(0.2)
+
 
 class Animation:
     def __init__(self,
                  title="D* Lite Path Planning",
-                 width=50,
-                 height=50,
-                 margin=10,
+                 width=10,
+                 height=10,
+                 margin=2,
                  x_dim=10,
                  y_dim=10,
                  start=(1, 1),
                  goal=(8, 8),
+                 cell_size=200,
                  viewing_range=1):
         pygame.init()
         self.width = width
@@ -54,6 +68,7 @@ class Animation:
         self.totalDistance=0
         self.pred_time=0
         self.pred_distance=0
+        self.cell_size=cell_size
         pygame.font.SysFont('Comic Sans MS', 36)
         self.font = pygame.font.Font(None, 32)
 
@@ -65,7 +80,7 @@ class Animation:
         window_size = [(width + margin) * y_dim + margin,
                        (height + margin) * x_dim + margin]
 
-        self.screen = pygame.display.set_mode(window_size)
+        self.screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
 
         # create occupancy grid map
         """
@@ -121,6 +136,32 @@ class Animation:
                 # draw robot position as red circle
                 pygame.draw.circle(self.screen, color, step_center, round(self.width / 2) - 2)
 
+    def _scale_obstacles(self, obs: List[Tuple[int,int,int,int]], cell_size: int):
+        scaled = []
+        for (x_mm, y_mm,x_s,y_s) in obs:
+            x = round(x_s/100*self.x_dim)
+            y = round(y_s/100*self.y_dim)
+            cell_x = math.ceil(x_mm / cell_size)
+            cell_y = math.ceil(y_mm / cell_size)
+            for i in range(0,cell_x):
+                for j in range(0,cell_y):
+                    obs_x = x + i
+                    obs_y = y + j
+                    if 0 <= obs_x < self.x_dim and 0 <= obs_y< self.y_dim:
+                        scaled.append((x+i, y+j))
+        return scaled
+
+    def init_obstacles(self, obs_attr:List[Tuple[int,int,int,int]], cell_size:int):
+        """
+        obs_attr : obstacles attributes size and position in percent as list of tuples (x_mm,y_mm,x,y)
+        cell_size    : size of one cell in mm
+        """
+
+        obs = self._scale_obstacles(obs_attr, cell_size)
+        for o in obs:
+            self.occupancy_grid_map[o[0], o[1]] = 255
+            cw.send_obs_coord(o)
+
     def display_obs(self, observations=None):
         if observations is not None:
             for o in observations:
@@ -133,6 +174,7 @@ class Animation:
         thread = threading.Thread(target=check_loop, daemon=True,args=(self,))
         thread.start()
         path = cw.loc.get_path()
+        flag = True
         while not self.done:
             if path is None:
                 path = []
@@ -261,9 +303,6 @@ class Animation:
             padding = 80
             text_pred_time_rect.topright = (self.width*self.y_dim - padding, padding)
             self.screen.blit(text_pred_time, text_pred_time_rect)
-
-
-
 
             # set game tick
             self.clock.tick(20)
