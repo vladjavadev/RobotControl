@@ -12,6 +12,7 @@ import json
 import threading
 import time
 import functools
+from typing import List
 
 #change value for 2 mode 
 mode=3
@@ -20,7 +21,7 @@ g_dt = GridDto()
 logic = None
 route_times = []
 pred_times = []
-
+path_build_time_list = []
 ip="0.0.0.0"
 # ip="localhost"
 
@@ -105,7 +106,9 @@ def moving_robot(logic: Logic):
     while True:
         try:
             time.sleep(0.05)
+            path_build_time = time.time() 
             path = logic.dto.get_path()
+            path_build_time = time.time() - path_build_time
             if path is not None and path!=last_path:
                 if len(path)>1:
                     if not p_obs.is_updated:    
@@ -113,15 +116,18 @@ def moving_robot(logic: Logic):
                         p_obs.update(next_pos)
                         ptime, pdistance = logic.predict_time_distance(path)
                         pred_times.append(ptime)
+                        path_build_time_list.append(path_build_time)
                         logic.dto.set_predict_time_distance(ptime,pdistance)
 
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                 p_obs.is_done = True
                 print("Client: Reached Goal!")
-                print("Total route times: ", route_times)
-                print("Total route time: ", sum(route_times))
+                print("Total time: ", time.time()-start_time)
+                print("build route times: ", route_times)
+                print("Total build route time: ", sum(route_times))
                 print("Total predict times: ", pred_times)
+                print("Path build times: ", path_build_time_list)
                 break
         except Exception as e:
             print("MOVING ROBOT EXCEPTION:", e)
@@ -142,7 +148,7 @@ class DoWork(threading.Thread):
         print(threading.current_thread(), 'done')
 
 
-def move_process(p_obs: PathObservation, logic: Logic, route_times: list[int]):
+def move_process(p_obs: PathObservation, logic: Logic, route_times: List[int]):
     counter = 0
     update_time_start = time.time()
     build_route_time_start = time.time()
