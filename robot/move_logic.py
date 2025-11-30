@@ -34,7 +34,7 @@ class Logic:
         delta_x = new_pos[0]-pos[0]
         delta_y = new_pos[1] - pos[1]
         norm_dir = self.normalize_dir((delta_x, delta_y))
-        print(f"   get_dir: delta=({norm_dir[0]}, {norm_dir[1]})")
+        # print(f"   get_dir: delta=({norm_dir[0]}, {norm_dir[1]})")
         return norm_dir
     
     def normalize_dir(self, vector):
@@ -68,15 +68,15 @@ class Logic:
                 self.rotateStep+=1
                 if turns[1] == "right":
                     self.mk_control.stop()
-                    print("Turn right: ",turns[0])
+                    # print("Turn right: ",turns[0])
                     self.mk_control.turnRight(self.vMode,turns[0])
                 elif turns[1] == "left":
                     self.mk_control.stop()
-                    print("Turn left: ",turns[0])
+                    # print("Turn left: ",turns[0])
                     self.mk_control.turnLeft(self.vMode,turns[0])
             self.moveStep+=1
             self.mk_control.forward(self.vMode)
-            print(f"@@@@ MOveSteps:{self.moveStep} ... RotateStep:{self.rotateStep}")
+            # print(f"@@@@ MOveSteps:{self.moveStep} ... RotateStep:{self.rotateStep}")
 
     def stop(self):
         self.mk_control.stop()  

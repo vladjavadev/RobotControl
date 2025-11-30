@@ -116,7 +116,6 @@ def run_algorithm(dto: GridDto):
                     path, g, rhs = dstar.move_and_replan(robot_position=new_position)
 
                     end = time.time()
-                    print(f"Время расчёта: {end - start:.6f} секунд")
                     dto._lock.release()
                 dto.set_path(path)
                 

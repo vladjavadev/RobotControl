@@ -33,7 +33,7 @@ async def echo(dto:GridDto, websocket:ServerConnection):
     if event["type"] == "set-obs":
         
         if "obs" in event:
-            print("<!------",event["obs"][0],"------!>")
+            # print("<!------",event["obs"][0],"------!>")
             dto.set_obs(event["obs"][0])
         elif "no-obs" in event:
             dto.rem_obs(event["no-obs"][0])
@@ -113,14 +113,12 @@ def moving_robot(logic: Logic):
             if path is not None and path!=last_path:
                 if len(path)>1:
                     if not p_obs.is_updated:   
-                        _lock.acquire()
                         next_pos = path[1]
                         p_obs.update(next_pos)
                         ptime, pdistance = logic.predict_time_distance(path)
                         pred_times.append(ptime)
                         path_build_time_list.append(path_build_time)
                         logic.dto.set_predict_time_distance(ptime,pdistance)
-                        _lock.release()
 
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
@@ -132,10 +130,6 @@ def moving_robot(logic: Logic):
                     "path_build_times": path_build_time_list
                 }
                 print("Total time: ", time.time()-start_time)
-                print("build route times: ", route_times)
-                print("Total build route time: ", sum(route_times))
-                print("Total predict times: ", pred_times)
-                print("Path build times: ", path_build_time_list)
                 print(json.dumps(jsonData, indent=4))
                 break
         except Exception as e:
