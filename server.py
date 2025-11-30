@@ -123,11 +123,17 @@ def moving_robot(logic: Logic):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                 p_obs.is_done = True
                 print("Client: Reached Goal!")
+                jsonData = {
+                    "build_route_times": route_times,
+                    "predict_times": pred_times,
+                    "path_build_times": path_build_time_list
+                }
                 print("Total time: ", time.time()-start_time)
                 print("build route times: ", route_times)
                 print("Total build route time: ", sum(route_times))
                 print("Total predict times: ", pred_times)
                 print("Path build times: ", path_build_time_list)
+                print(json.dumps(jsonData, indent=4))
                 break
         except Exception as e:
             print("MOVING ROBOT EXCEPTION:", e)
