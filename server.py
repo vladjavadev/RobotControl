@@ -106,9 +106,9 @@ def moving_robot(logic: Logic):
     while True:
         try:
             time.sleep(0.05)
-            path_build_time = time.time() 
+            spbt = time.time() 
             path = logic.dto.get_path()
-            path_build_time = time.time() - path_build_time
+            path_build_time = time.time() - spbt
             if path is not None and path!=last_path:
                 if len(path)>1:
                     if not p_obs.is_updated:    
