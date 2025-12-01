@@ -17,7 +17,7 @@ class InputField:
 
 class GridGUI:
     def __init__(self, title="Init Dim GRID",
-                 width=10, height=10, margin=2,
+                 width=20, height=20, margin=2,
                  x_dim=10, y_dim=10):
         self.width = width
         self.height = height

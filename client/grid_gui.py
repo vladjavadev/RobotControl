@@ -27,25 +27,23 @@ colors = {
 def check_loop(gui):
     time.sleep(1.0)
     obs_attr = [
-                (400, 200,10,10),(200, 200, 20, 10),
-                (200,200,0,35),(200,200,10,35),
+                (200,200,0,35),(200,200,60,35),
                 (200,150,0,50),(150,100,0,45),
-                (200,200,5,75),(200,400,10,65),
-                (200,200,10,80),(400,200,0,80),
-                (200,200,20,75),(400,200,30,65),
+                (200,200,10,75),(200,200,10,80),
+                (200,200,60,80), (350,800,35,40)
                 ]
-    gui.init_obstacles(obs_attr,gui.cell_size)
+    # gui.init_obstacles(obs_attr,gui.cell_size)
 
     while not gui.done:
         cw.get_pos(cw.loc)
-        time.sleep(0.2)
+        time.sleep(1.0)
 
 
 class Animation:
     def __init__(self,
                  title="D* Lite Path Planning",
-                 width=10,
-                 height=10,
+                 width=20,
+                 height=20,
                  margin=2,
                  x_dim=10,
                  y_dim=10,
@@ -70,7 +68,8 @@ class Animation:
         self.pred_distance=0
         self.cell_size=cell_size
         pygame.font.SysFont('Comic Sans MS', 36)
-        self.font = pygame.font.Font(None, 32)
+        self.font = pygame.font.Font(None, 16)
+        self.btmFrame = 150
 
 
 
@@ -78,7 +77,7 @@ class Animation:
 
         # Set the 'width' and 'height' of the screen
         window_size = [(width + margin) * y_dim + margin,
-                       (height + margin) * x_dim + margin]
+                       self.btmFrame+(height + margin) * x_dim + margin]
 
         self.screen = pygame.display.set_mode(window_size, pygame.RESIZABLE)
 
@@ -103,7 +102,7 @@ class Animation:
         pygame.display.set_caption(title)
 
         # set font
-        pygame.font.SysFont('Comic Sans MS', 36)
+        pygame.font.SysFont('Comic Sans MS', 18)
 
         # Loop until the user clicks the close button
         self.done = False
@@ -285,23 +284,22 @@ class Animation:
                             2 * self.viewing_range * (self.height + self.margin),
                             2 * self.viewing_range * (self.width + self.margin)], 2)
             
-            text_distance = self.font.render(f"Total Distance: {self.totalDistance} mm", True, (255, 0, 0))
+            text_distance = self.font.render(f"Total Distance: {self.totalDistance:.0f} mm", True, (255, 0, 0))
             text_rect = text_distance.get_rect()
-            padding = 10
-            text_rect.topright = (self.width*self.y_dim - padding, padding)
+            text_rect.centerx = (self.width + self.margin) * self.y_dim // 2
+            text_rect.top = (self.height + self.margin) * self.x_dim + 10
             self.screen.blit(text_distance, text_rect)
 
-            text_pred_distance = self.font.render(f"Predicted Distance: {self.pred_distance} mm", True, (255, 0, 0))
+            text_pred_distance = self.font.render(f"Predicted Distance: {self.pred_distance:.0f} mm", True, (255, 0, 0))
             text_pred_rect = text_pred_distance.get_rect()
-            padding = 40
-            text_pred_rect.topright = (self.width*self.y_dim - padding, padding)
+            text_pred_rect.centerx = (self.width + self.margin) * self.y_dim // 2
+            text_pred_rect.top = (self.height + self.margin) * self.x_dim + 40
             self.screen.blit(text_pred_distance, text_pred_rect)
 
-            
-            text_pred_time = self.font.render(f"Predicted Time: {self.pred_time} seconds", True, (255, 0, 0))
+            text_pred_time = self.font.render(f"Predicted Time: {self.pred_time:.0f} seconds", True, (255, 0, 0))
             text_pred_time_rect = text_pred_time.get_rect()
-            padding = 80
-            text_pred_time_rect.topright = (self.width*self.y_dim - padding, padding)
+            text_pred_time_rect.centerx = (self.width + self.margin) * self.y_dim // 2
+            text_pred_time_rect.top = (self.height + self.margin) * self.x_dim + 70
             self.screen.blit(text_pred_time, text_pred_time_rect)
 
             # set game tick
