@@ -22,8 +22,8 @@ logic = Logic(vMode=mode)
 route_times = []
 pred_times = []
 path_build_time_list = []
-# ip="0.0.0.0"
-ip="localhost"
+ip="0.0.0.0"
+# ip="localhost"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
