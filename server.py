@@ -105,7 +105,7 @@ def moving_robot(logic: Logic):
     start_time = time.time()
     while True:
         try:
-            time.sleep(0.05)
+            time.sleep(0.1)
             spbt = time.time() 
             path = logic.dto.get_path()
             path_build_time = time.time() - spbt

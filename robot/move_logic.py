@@ -20,7 +20,7 @@ DIRECTIONS = [
 
 
 class Logic:
-    def __init__(self, pos=(0, 0), dir=(0,0), vMode = 1):
+    def __init__(self, pos=(0, 0), dir=(0, 1), vMode = 1):
         self.dir = dir
         self.pos = pos
         self.vMode = vMode

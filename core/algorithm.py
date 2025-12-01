@@ -28,7 +28,7 @@ def run_algorithm(dto: GridDto):
     start_pos = tuple(dto.start)
     dto.set_position(start_pos)
     goal = tuple(dto.goal)
-    view_range = 20
+    view_range = 5
 
 
     new_map = dto.world
@@ -79,7 +79,7 @@ def run_algorithm(dto: GridDto):
         while True:
             try:
                 
-                time.sleep(0.05)
+                time.sleep(0.1)
                 start = time.time()
 
                 
