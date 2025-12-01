@@ -20,16 +20,20 @@ DIRECTIONS = [
 
 
 class Logic:
-    def __init__(self, dto:GridDto, pos=(0, 0), dir=(0,0), vMode = 1):
+    def __init__(self, pos=(0, 0), dir=(0,0), vMode = 1):
         self.dir = dir
         self.pos = pos
         self.vMode = vMode
-        self.dto = dto
-        self.mk_control = control.Controller(self.dto)
         self.moveStep=0
         self.rotateStep=0
 
-    
+    def __init_controller(self):
+        self.mk_control = control.Controller(self.dto)
+
+    def init_dto(self,dto:GridDto):
+        self.dto = dto
+        self.__init_controller()
+
     def get_dir(self, pos, new_pos):
         delta_x = new_pos[0]-pos[0]
         delta_y = new_pos[1] - pos[1]

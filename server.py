@@ -18,12 +18,12 @@ from typing import List
 mode=3
 g_dt = GridDto()
 
-logic = None
+logic = Logic(vMode=mode)
 route_times = []
 pred_times = []
 path_build_time_list = []
-ip="0.0.0.0"
-# ip="localhost"
+# ip="0.0.0.0"
+ip="localhost"
 
 async def echo(dto:GridDto, websocket:ServerConnection):
     message = await websocket.recv()
@@ -61,11 +61,10 @@ async def echo(dto:GridDto, websocket:ServerConnection):
         }
         await websocket.send(json.dumps(event_connected))
     elif event["type"] == "init-dim":
-        global logic
 
         dto.set_dim(event["grid_dim"])
         dto.set_unit(event["cell_unit"])
-        logic = Logic(dto,dir=(0,1),vMode=mode)
+        logic.init_dto(dto)
 
     elif event["type"] == "init-points":
         dto.set_start(event["start"])

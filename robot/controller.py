@@ -9,6 +9,7 @@ class Controller:
     speed_mode_max = 5
     speed_mode_min = 1
     unit = 200#mm
+    
 
     def __init__(self, dto:GridDto):
         self.totalDistance = 0
