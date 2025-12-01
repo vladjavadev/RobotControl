@@ -157,7 +157,7 @@ def move_process(p_obs: PathObservation, logic: Logic, route_times: List[int]):
 
     while True:
 
-        time.sleep(0.05)
+        time.sleep(0.02)
         if p_obs.is_updated:
             logic.build_route(p_obs.next_pos)
             logic.dto.set_position(p_obs.next_pos)
