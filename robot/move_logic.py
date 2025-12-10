@@ -1,6 +1,7 @@
 # from robot import mock_controller as control
 from robot import controller as control
 from data.grid_dto import GridDto
+import time
 
 
 DIRECTIONS = [
@@ -116,14 +117,20 @@ class Logic:
         return (total_time, total_distance)
 
     def build_route(self,new_pos):
+        start_route_procc = time.time()
         pos = self.dto.get_position()
         if pos == new_pos:
             return
         new_dir = self.get_dir(pos,new_pos)
         turns = self.turns_needed(self.dir,new_dir)
+        time_route_procc = time.time() - start_route_procc 
+        start_move = time.time()
         self.move_robot(turns,new_pos)
+        time_move = time.time() - start_move 
         self.dto.set_distance(self.mk_control.totalDistance)
         self.update_dir_pos(new_pos,new_dir)
+        return abs(time_move-time_route_procc)
+        
 
 
 

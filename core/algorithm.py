@@ -100,7 +100,7 @@ def run_algorithm(dto: GridDto):
                     old_map = new_map
                     slam.set_ground_truth_map(gt_map=new_map)
 
-                # print("new_pos and last_pos",new_position,last_position)
+                # print("new_pos and last_pos",new_position,last_position
                 if new_position != last_position:
                     dto._lock.acquire()
                     last_position = new_position
@@ -115,7 +115,7 @@ def run_algorithm(dto: GridDto):
 
                     path, g, rhs = dstar.move_and_replan(robot_position=new_position)
 
-                    end = time.time()
+                    dto.set_time_build_path(time.time()-start)
                     dto._lock.release()
                 dto.set_path(path)
                 

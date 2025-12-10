@@ -1,5 +1,7 @@
 from dstar.grid import OccupancyGridMap 
 from threading import Lock
+import time
+
 class GridDto:
     def __init__(self,
                  viewing_range=3):
@@ -19,6 +21,13 @@ class GridDto:
         self._lock = Lock()
         self._lock_dist = Lock()
         self.world = None
+        self.time_build_path=0.0
+
+    def set_time_build_path(self, val):
+        self.time_build_path = val
+
+    def get_time_build_path(self):
+        return self.time_build_path
 
     def set_predict_time_distance(self, time, distance):
         self.pred_time = time
@@ -60,8 +69,13 @@ class GridDto:
     def set_path(self, path=None):
         self.path = path
     def get_path(self):
+        start = time.time()
         with self._lock:
+            self._time_build_path = time.time()-start
             return self.path
+        
+    def get_time(self):
+        return self._time_build_path
     
     def get_position(self):
         return self.current

@@ -19,9 +19,10 @@ mode=3
 g_dt = GridDto()
 
 logic = Logic(vMode=mode)
-route_times = []
+trajectory_times = []
 pred_times = []
 path_build_time_list = []
+path_build_time = 0
 ip="0.0.0.0"
 # ip="localhost"
 
@@ -98,33 +99,41 @@ def moving_robot(logic: Logic):
     time.sleep(5.0)
     last_path = []
     next_pos = None
+    last_pred_time = 0
+    last_pbuild_time = 0
     _lock = threading.Lock()
 
     p_obs = PathObservation() 
-    threading.Thread(target=move_process, args=(p_obs, logic,route_times)).start()
+    threading.Thread(target=move_process, args=(p_obs, logic,trajectory_times)).start()
     start_time = time.time()
     while True:
         try:
             time.sleep(0.1)
-            spbt = time.time() 
             path = logic.dto.get_path()
-            path_build_time = time.time() - spbt
             if path is not None and path!=last_path:
                 if len(path)>1:
-                    if not p_obs.is_updated:   
+
+                    if not p_obs.is_updated:
+                        _lock.acquire()
                         next_pos = path[1]
                         p_obs.update(next_pos)
                         ptime, pdistance = logic.predict_time_distance(path)
-                        pred_times.append(ptime)
-                        path_build_time_list.append(path_build_time)
+                        if(last_pred_time!=ptime or len(pred_times)==0):
+                            pred_times.append(ptime)
+                            path_build_time = logic.dto.get_time_build_path()
+                            path_build_time_list.append(path_build_time)
                         logic.dto.set_predict_time_distance(ptime,pdistance)
+
+                        last_pred_time = pred_times[-1]
+                        _lock.release()
+
 
             if logic.dto.get_position() == tuple(logic.dto.get_goal()):
                 print(f"MOVE ROBOT POS:{logic.dto.get_position()}")
                 p_obs.is_done = True
                 print("Client: Reached Goal!")
                 jsonData = {
-                    "build_route_times": route_times,
+                    "build_trajectory_times": trajectory_times,
                     "predict_times": pred_times,
                     "path_build_times": path_build_time_list
                 }
@@ -153,16 +162,14 @@ class DoWork(threading.Thread):
 def move_process(p_obs: PathObservation, logic: Logic, route_times: List[int]):
     counter = 0
     update_time_start = time.time()
-    build_route_time_start = time.time()
-
     while True:
 
         time.sleep(0.02)
         if p_obs.is_updated:
-            logic.build_route(p_obs.next_pos)
+            build_route_time = logic.build_route(p_obs.next_pos)
             logic.dto.set_position(p_obs.next_pos)
-            route_times.append(time.time()-build_route_time_start)
-            build_route_time_start = time.time()
+            if(build_route_time):
+                route_times.append(build_route_time)
             p_obs.is_updated = False
             counter = 0
         elif counter ==5:
@@ -170,6 +177,7 @@ def move_process(p_obs: PathObservation, logic: Logic, route_times: List[int]):
             update_time_start = time.time()
             logic.stop()
         elif p_obs.is_done:
+            route_times.append(0)
             logic.stop()
             break
 
