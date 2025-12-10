@@ -7,9 +7,9 @@ print("Python-Interpreter: {}\n".format(sys.version))
 
 # Beide Motoren werden mit unterschiedlichen PWM angesteuert
 pin_FmotL = "P9_14" # GPIO 50 PWMA linker Motor
-pin_FmotR = "P9_16" # GPIO 51 PWMB rechter Motor
+pin_FmotR = "P9_21" # GPIO 51 PWMB rechter Motor
 
-pin_BmotL = "P9_21" # GPIO 50 PWMA linker Motor
+pin_BmotL = "P9_16" # GPIO 50 PWMA linker Motor
 pin_BmotR = "P9_22" # GPIO 51 PWMB rechter Motor
 # Eingänge In2 und In2 invertiert zueinander (geben Drehrichtung vor)
 
