@@ -6,14 +6,14 @@ import time
 print("Python-Interpreter: {}\n".format(sys.version))
 
 # PWM pins for motor speed control
-pinPWMA = "P9_21"  # Motor A speed
-pinPWMB = "P9_22"  # Motor B speed
+pinPWMA = "P9_14"  # Motor A speed
+pinPWMB = "P9_16"  # Motor B speed
 
 # GPIO pins for motor direction control
-ina_1 = "P9_23"  # Motor A direction 1
-ina_2 = "P9_25"  # Motor A direction 2
-inb_1 = "P9_27"  # Motor B direction 1
-inb_2 = "P9_29"  # Motor B direction 2
+ina_1 = "P9_25"  # Motor A direction 1
+ina_2 = "P9_23"  # Motor A direction 2
+inb_1 = "P9_29"  # Motor B direction 1
+inb_2 = "P9_27"  # Motor B direction 2
 
 # PWM Parameters
 FREQ = 250000
