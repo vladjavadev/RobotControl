@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
 from client import client_websocket as cw
-
+import time
 
 
 class InputField:
@@ -75,6 +75,7 @@ class GridGUI:
                         self.start = (row, column)
                         self.gui_grid[row][column] = [255, 0, 0]  # Green for start
                         print(f"Start position set to: {self.start}")
+                        time.sleep(0.2)
                     elif self.start == (row, column):
                         print("Start position already set here.")
                         continue
