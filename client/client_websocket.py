@@ -51,19 +51,19 @@ async def send_message(type, message):
             }
             
             await websocket.send(json.dumps(event))
-            print(f"✓ Событие отправлено: {event}")
+            print(f"Event sended: {event}")
             
             # Опционально: ожидание ответа от сервера
             try:
                 response = await asyncio.wait_for(websocket.recv(), timeout=5.0)
-                print(f"Ответ сервера: {response}")
+                print(f"Server respond: {response}")
             except asyncio.TimeoutError:
-                print("Сервер не ответил в течение 5 секунд")
+                print("Server did not respond within 5 seconds")
             
     except ConnectionRefusedError:
-        print("❌ Не удалось подключиться к серверу. Проверьте, что сервер запущен на ws://localhost:8765")
+        print(f"Not connected to server. Please check that the server is running at {uri}")
     except Exception as e:
-        print(f"❌ Ошибка: {e}")
+        print(f"Error: {e}")
 
 
 def send_obs_coord(grid_cell):
@@ -95,7 +95,7 @@ async def fetch_location(location):
             }
             
             await websocket.send(json.dumps(event))
-            print(f"✓ Событие отправлено: {event}")
+            print(f"Event sended: {event}")
             
             # Опционально: ожидание ответа от сервера
             try:
@@ -111,14 +111,14 @@ async def fetch_location(location):
                         pred_distance = event_pos["pred_distance"]
                         loc.update(pos,path,goal,distance,pred_time,pred_distance)
 
-                print(f"Ответ сервера: {response}")
+                print(f"Server respond: {response}")
             except asyncio.TimeoutError:
-                print("Сервер не ответил в течение 5 секунд")
+                print("Server did not respond within 5 seconds")
             
     except ConnectionRefusedError:
-        print("❌ Не удалось подключиться к серверу. Проверьте, что сервер запущен на ws://localhost:8765")
+        print(f"Not connected to server. Please check that the server is running at {uri}")
     except Exception as e:
-        print(f"❌ Ошибка: {e}")
+        print(f"Error: {e}")
 
 
 
@@ -131,7 +131,7 @@ async def fetch_connection_status(con_dto):
             }
             
             await websocket.send(json.dumps(event))
-            print(f"✓ Событие отправлено: {event}")
+            print(f"Event sended: {event}")
             
             # Опционально: ожидание ответа от сервера
             try:
@@ -140,17 +140,17 @@ async def fetch_connection_status(con_dto):
                 if event["type"] == "get-status":
                     if "status" in event:
                         con.update(event["status"])
-                print(f"Ответ сервера: {response}")
+                print(f"Server respond: {response}")
             except asyncio.TimeoutError:
-                print("Сервер не ответил в течение 5 секунд")
+                print("Server did not respond within 5 seconds")
             
     except ConnectionRefusedError:
-        print("❌ Не удалось подключиться к серверу. Проверьте, что сервер запущен на ws://localhost:8765")
+        print(f"Not connected to server. Please check that the server is running at {uri}")
     except Exception as e:
-        print(f"❌ Ошибка: {e}")
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     try:
         asyncio.run(send_message())
     except KeyboardInterrupt:
-        print("\n\nПрограмма прервана пользователем")
+        print("\n\nClient stopped by user\n")

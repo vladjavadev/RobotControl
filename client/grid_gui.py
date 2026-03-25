@@ -210,11 +210,7 @@ class Animation:
 
                     # turn pos into cell
                     grid_cell = (x, y)
-
                     # set the location in the grid map
-                    # if self.world.is_unoccupied(grid_cell):
-                    #     self.world.set_obstacle(grid_cell)
-                    #     self.observation = {"pos": grid_cell, "type": OBSTACLE}
                     cw.send_obs_coord(grid_cell)
                     self.occupancy_grid_map[grid_cell[0], grid_cell[1]] = 255
 
@@ -230,11 +226,6 @@ class Animation:
                     # turn pos into cell
                     grid_cell = (x, y)
 
-                    # set the location in the grid map
-                    # if not self.world.is_unoccupied(grid_cell):
-                    #     print("grid cell: ".format(grid_cell))
-                    #     self.world.remove_obstacle(grid_cell)
-                    #     self.observation = {"pos": grid_cell, "type": UNOCCUPIED}
 
                     cw.send_no_obs_coord(grid_cell)
                     self.occupancy_grid_map[grid_cell[0], grid_cell[1]] = 0

@@ -33,14 +33,14 @@ class GridGUI:
         window_size = [(width + margin) * y_dim + margin,
                     (height + margin) * x_dim + margin+60]
         
-        # после вычисления window_size
+        
         win_w, win_h = window_size
 
-        # кнопка OK внизу слева
+        # button OK down left
         self.ok_btn = InputField(10, win_h - 50, 60, 40)
         self.ok_btn.text = "OK"
 
-        # кнопка CLEAR рядом
+        # button CLEAR down right
         self.clear_btn = InputField(80, win_h - 50, 120, 40)
         self.clear_btn.text = "CLEAR"
 

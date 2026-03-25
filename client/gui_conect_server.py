@@ -181,8 +181,8 @@ class GUI_ConnectServer:
 
             status = cw.con.get_status()
             if status == "connected":
-                self.input_dim()  # Этот метод сам завершится при нажатии OK
-                break  # Выходим из цикла
+                self.input_dim()  
+                break  
 
             self.screen.fill((255, 255, 255))
             text_connection = self.font.render(status, True, (0, 0, 0))

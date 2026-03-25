@@ -3,7 +3,7 @@
 REM Проверка, существует ли папка venv
 if not exist venv (
     echo Virutual environment not found. Creating venv...
-    python3 -m venv venv
+    python -m venv venv
 )
 
 REM Activate virtual environment

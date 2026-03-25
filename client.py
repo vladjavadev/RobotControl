@@ -12,13 +12,12 @@ if __name__ == "__main__":
         dim = (cw.dim_grid.x_dim, cw.dim_grid.y_dim)
         cell_width = width//dim[0]
         cell_height = height//dim[0]
-        time.sleep(0.2)  # Небольшая пауза перед запуском основной GUI
+        time.sleep(0.2) 
         init_gui = gui_init.GridGUI(width=cell_width,height=cell_height,x_dim=dim[0], y_dim=dim[1])
         init_gui.run() 
-        # cw.send_dim_grid(dim)
-        # cw.send_points((0,0),(9,9))
-        time.sleep(0.2)  # Небольшая пауза перед запуском основной GUI
+
+        time.sleep(0.2)  
         main_gui = grid_gui.Animation(width=cell_width,height=cell_height,x_dim=dim[0], y_dim=dim[1],cell_size=200)
         main_gui.run_game()
     except KeyboardInterrupt:
-        print("\n\nПрограмма прервана пользователем") 
+        print("\n\nProgram stopped by user") 
