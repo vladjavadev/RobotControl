@@ -21,10 +21,10 @@ vModeMax = 4
 
 def get_dc(vMode):
     if vMode>vModeMin and vMode<=vModeMax:
-        dc = duty_levels[vMode]/100
+        dc = duty_levels[vMode]
         return dc
     else:
-        return duty_levels[0]/100
+        return duty_levels[0]
 
 def init():
     PWM.start(pin_FmotL, 0, FREQ, 0)
@@ -35,13 +35,13 @@ def init():
 
 def turnLeft(dTime, vMode=1):
     dc = get_dc(vMode)
-    PWM.set_duty_cycle(pin_FmotL, dc*100)
+    PWM.set_duty_cycle(pin_FmotL, dc)
     PWM.set_duty_cycle(pin_FmotR, 0)
     time.sleep(dTime)
 
 def turnRight(dTime, vMode=1):
     dc = get_dc(vMode)
-    PWM.set_duty_cycle(pin_FmotR, dc*100)
+    PWM.set_duty_cycle(pin_FmotR, dc)
     PWM.set_duty_cycle(pin_FmotL, 0)
     time.sleep(dTime)
 
@@ -55,12 +55,12 @@ def stop():
 
 def forward(vMode=1):
     dc = get_dc(vMode)
-    PWM.set_duty_cycle(pin_FmotL, dc*100)
-    PWM.set_duty_cycle(pin_FmotR, dc*100)
+    PWM.set_duty_cycle(pin_FmotL, dc)
+    PWM.set_duty_cycle(pin_FmotR, dc)
 
 
 def reverse(vMode=1):
     dc = get_dc(vMode)
-    PWM.set_duty_cycle(pin_BmotL, dc*100)
-    PWM.set_duty_cycle(pin_BmotR, dc*100)
+    PWM.set_duty_cycle(pin_BmotL, dc)
+    PWM.set_duty_cycle(pin_BmotR, dc)
 

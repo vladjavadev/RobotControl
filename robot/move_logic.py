@@ -69,19 +69,21 @@ class Logic:
         self.dir = new_dir
     
     def move_robot(self, turns, new_pos):
-            if turns[0] > 0:
-                self.rotateStep+=1
-                if turns[1] == "right":
-                    self.mk_control.stop()
-                    # print("Turn right: ",turns[0])
-                    self.mk_control.turnRight(self.vMode,turns[0])
-                elif turns[1] == "left":
-                    self.mk_control.stop()
-                    # print("Turn left: ",turns[0])
-                    self.mk_control.turnLeft(self.vMode,turns[0])
-            self.moveStep+=1
-            self.mk_control.forward(self.vMode)
-            # print(f"@@@@ MOveSteps:{self.moveStep} ... RotateStep:{self.rotateStep}")
+        turns_count = turns[0]
+        turns_dir = turns[1]
+        if turns_count > 0:
+            self.rotateStep+=1
+            if turns_dir == "right":
+                self.mk_control.stop()
+                print("Turn right: ",turns_count)
+                self.mk_control.turnRight(self.vMode,turns_count)
+            elif turns_dir == "left":
+                self.mk_control.stop()
+                print("Turn left: ",turns_count)
+                self.mk_control.turnLeft(self.vMode,turns_count)
+        self.moveStep+=1
+        self.mk_control.forward(self.vMode)
+        # print(f"@@@@ MOveSteps:{self.moveStep} ... RotateStep:{self.rotateStep}")
 
     def stop(self):
         self.mk_control.stop()  

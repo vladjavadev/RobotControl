@@ -46,6 +46,7 @@ class Controller:
         cM = self.clamp_speed(speed_mode)
         vl = rk.speeds[cM]
         turnTime = rk.get_deltaT(vl, 0, 45*step)
+        print(f"Turn Left: speed_mode={speed_mode}, cM={cM}, vl={vl}, turnTime={turnTime}")
 
         dist = self.copmute_arc_distance(vl,0,turnTime)
 
@@ -63,7 +64,7 @@ class Controller:
         cM = self.clamp_speed(speed_mode)
         vr = rk.speeds[cM]
         turnTime = rk.get_deltaT(0, vr, 45*step)
-
+        print(f"Turn Right: speed_mode={speed_mode}, cM={cM}, vr={vr}, turnTime={turnTime}")
         dist = self.copmute_arc_distance(0,vr,turnTime)
         
         rd.turnRight(turnTime, cM)
@@ -77,6 +78,7 @@ class Controller:
         self.dto._lock_dist.acquire()
         cM = self.clamp_speed(speed_mode)
         timeSleep = self.calc_fwd_time(speed_mode)
+        print(f"Forward: speed_mode={speed_mode}, cM={cM}, timeSleep={timeSleep}")
         rd.forward(cM)
         time.sleep(timeSleep)
         self.totalTime+=timeSleep
@@ -89,6 +91,7 @@ class Controller:
         self.dto._lock_dist.acquire()
         cM = self.clamp_speed(speed_mode)
         timeSleep = self.calc_fwd_time(speed_mode)
+        print(f"Reverse: speed_mode={speed_mode}, cM={cM}, timeSleep={timeSleep}")
         rd.reverse(cM)
         time.sleep(timeSleep)
         self.totalTime+=timeSleep
